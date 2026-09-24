@@ -12,7 +12,7 @@ public sealed class LocalTime : ILocalTime
     public LocalTime(TimeProvider clock, IOptions<AppOptions> options)
     {
         _clock = clock;
-        var tzId = options.Value.TimeZoneId;
+        string tzId = options.Value.TimeZoneId;
         try
         {
             _timeZone = TimeZoneInfo.FindSystemTimeZoneById(tzId);
