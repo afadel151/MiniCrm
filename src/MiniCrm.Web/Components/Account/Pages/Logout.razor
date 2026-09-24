@@ -1,0 +1,36 @@
+@page "/Account/Logout"
+
+@using Microsoft.AspNetCore.Identity
+@using MiniCrm.Infrastructure.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Logout> Logger
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Log out</PageTitle>
+
+<h1>Log out</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <p>You are signed in as <strong>@context.User.Identity?.Name</strong>.</p>
+        <form method="post" @formname="logout" @onsubmit="LogoutUser">
+            <AntiforgeryToken />
+            <button type="submit" class="btn btn-primary">Log out</button>
+            <a class="btn btn-link" href="">Cancel</a>
+        </form>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not signed in.</p>
+        <a href="Account/Login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private async Task LogoutUser()
+    {
+        await SignInManager.SignOutAsync();
+        Logger.LogInformation("User logged out.");
+        RedirectManager.RedirectTo("Account/Login");
+    }
+}
