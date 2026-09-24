@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MiniCrm.Core/MiniCrm.Core.csproj" />
+    <Project Path="src/MiniCrm.Infrastructure/MiniCrm.Infrastructure.csproj" />
+    <Project Path="src/MiniCrm.Web/MiniCrm.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MiniCrm.Tests/MiniCrm.Tests.csproj" />
+  </Folder>
+</Solution>
