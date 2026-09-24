@@ -1,0 +1,98 @@
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<RadzenComponents />
+
+<RadzenLayout Style="grid-template-areas: 'rz-header rz-header' 'rz-sidebar rz-body';">
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center"
+                     JustifyContent="JustifyContent.SpaceBetween" Class="rz-pr-5" Style="width: 100%;">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                <RadzenText TextStyle="TextStyle.H6" Class="rz-mb-0"
+                            Style="color: var(--rz-header-color, white); font-weight: 600;">Mini CRM</RadzenText>
+            </RadzenStack>
+
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem">
+                <RadzenButton Icon="notifications" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat"
+                              Size="ButtonSize.Medium" Title="Rappels" />
+
+                <AuthorizeView>
+                    <Authorized>
+                        <RadzenProfileMenu>
+                            <Template>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <RadzenIcon Icon="account_circle" />
+
+                                    <RadzenText TextStyle="TextStyle.Subtitle2"
+                                                Class="rz-d-none rz-d-sm-inline rz-mb-0">
+                                        @context.User.Identity?.Name
+                                    </RadzenText>
+                                </div>
+                            </Template>
+
+                            <ChildContent>
+                                <RadzenProfileMenuItem Text="Changer le mot de passe"
+                                                       Path="Account/Manage/ChangePassword" Icon="key" />
+
+                                <RadzenProfileMenuItem Text="Se déconnecter" Path="Account/Logout" Icon="logout" />
+                            </ChildContent>
+                        </RadzenProfileMenu>
+                    </Authorized>
+
+                    <NotAuthorized>
+                        <NavLink href="Account/Login">
+                            <RadzenButton Text="Se connecter" ButtonStyle="ButtonStyle.Secondary"
+                                          Size="ButtonSize.Small" />
+                        </NavLink>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenHeader>
+
+
+    <RadzenSidebar @bind-Expanded="@sidebarExpanded">
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Tableau de bord" Path="" Icon="dashboard" />
+            <RadzenPanelMenuItem Text="Contacts" Path="contacts" Icon="people" />
+            <RadzenPanelMenuItem Text="Opportunités" Path="opportunities" Icon="trending_up" />
+            <RadzenPanelMenuItem Text="Pipeline" Path="pipeline" Icon="view_kanban" />
+            <RadzenPanelMenuItem Text="Rappels" Path="reminders" Icon="notifications" />
+            <RadzenPanelMenuItem Text="Messagerie" Path="messages" Icon="chat" />
+
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <RadzenPanelMenuItem Text="Administration" Icon="admin_panel_settings">
+                        <RadzenPanelMenuItem Text="Utilisateurs" Path="admin/users" Icon="manage_accounts" />
+                        <RadzenPanelMenuItem Text="Étapes du pipeline" Path="admin/pipeline" Icon="tune" />
+                        <RadzenPanelMenuItem Text="Journal d'audit" Path="admin/audit" Icon="receipt_long" />
+                        <RadzenPanelMenuItem Text="Corbeille" Path="admin/trash" Icon="delete" />
+                    </RadzenPanelMenuItem>
+                </Authorized>
+            </AuthorizeView>
+
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+
+<RadzenBody>
+    <div class="rz-p-4">
+        <ErrorBoundary>
+            <ChildContent>
+                @Body
+            </ChildContent>
+            <ErrorContent Context="ex">
+                <RadzenAlert AlertStyle="AlertStyle.Danger" Title="Une erreur s'est produite" AllowClose="false"
+                             Size="AlertSize.Medium">
+                    Une erreur inattendue est survenue dans l'application. Veuillez rafraîchir la page ou contacter
+                    l'administrateur.
+                </RadzenAlert>
+            </ErrorContent>
+        </ErrorBoundary>
+    </div>
+</RadzenBody>
+</RadzenLayout>
+
+@code {
+    private bool sidebarExpanded = true;
+}

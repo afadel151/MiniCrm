@@ -1,0 +1,24 @@
+﻿@using MiniCrm.Web.Components.Account.Shared
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                @if (context.User.Identity?.IsAuthenticated != true)
+                {
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <h1>Accès refusé</h1>
+                        <p>Vous n'avez pas l'autorisation d'accéder à cette page.</p>
+                    </div>
+                }
+            </NotAuthorized>
+            <Authorizing>
+                <p>Vérification des droits…</p>
+            </Authorizing>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>
