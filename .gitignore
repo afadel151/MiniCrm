@@ -59,3 +59,5 @@ credentials.txt
 *.docx
 *.md
 *.sql
+
+src/MiniCrm.Web.Blazor
