@@ -17,7 +17,8 @@ public partial class PipelineStage
     public bool IsLost { get; set; }
 
     public bool IsActive { get; set; }
-
+    public int BusinessId {get;set;}
+    public virtual Business? Business { get; set; }
     public virtual ICollection<Opportunity> Opportunities { get; set; } = new List<Opportunity>();
 
     public virtual ICollection<OpportunityStageHistory> OpportunityStageHistoryFromStages { get; set; } = new List<OpportunityStageHistory>();

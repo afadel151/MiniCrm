@@ -31,7 +31,7 @@ public partial class Contact
 
     public DateTime? UpdatedAtUtc { get; set; }
 
-    public Guid? UpdatedByUserId { get; set; }
+    public Guid UpdatedByUserId { get; set; }
 
     public bool IsDeleted { get; set; }
 
@@ -40,14 +40,16 @@ public partial class Contact
     public byte[] RowVersion { get; set; } = null!;
 
     public virtual Company? Company { get; set; }
+    public virtual Business? Business { get; set; }
+    public int BusinessId {get;set;}
 
     public virtual ApplicationUser CreatedByUser { get; set; } = null!;
 
-    public virtual ICollection<Interaction> Interactions { get; set; } = new List<Interaction>();
+    public virtual ICollection<Interaction> Interactions { get; set; } = [];
 
-    public virtual ICollection<Opportunity> Opportunities { get; set; } = new List<Opportunity>();
+    public virtual ICollection<Opportunity> Opportunities { get; set; } = [];
 
-    public virtual ICollection<Reminder> Reminders { get; set; } = new List<Reminder>();
+    public virtual ICollection<Reminder> Reminders { get; set; } = [];
 
     public virtual ApplicationUser? UpdatedByUser { get; set; }
 }

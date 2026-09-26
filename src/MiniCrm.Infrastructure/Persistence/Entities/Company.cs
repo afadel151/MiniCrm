@@ -24,7 +24,10 @@ public partial class Company
     public DateTime? DeletedAtUtc { get; set; }
 
     public byte[] RowVersion { get; set; } = null!;
+    public int BusinessId {get;set;}
 
+
+    public virtual Business? Business { get; set; }
     public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
 
     public virtual ApplicationUser CreatedByUser { get; set; } = null!;

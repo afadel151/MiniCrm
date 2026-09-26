@@ -19,4 +19,6 @@ public partial class AuditLog
     public string? Details { get; set; }
 
     public string? IpAddress { get; set; }
+    public int BusinessId {get;set;} // audit only for a business (staff actions...)
+    public virtual Business? Business { get; set; }
 }

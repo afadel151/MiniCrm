@@ -40,7 +40,8 @@ public partial class Opportunity
     public DateTime? DeletedAtUtc { get; set; }
 
     public byte[] RowVersion { get; set; } = null!;
-
+    public int BusinessId {get;set;} // Denormalization
+    public virtual Business? Business { get; set; }
     public virtual Contact Contact { get; set; } = null!;
 
     public virtual ApplicationUser CreatedByUser { get; set; } = null!;
