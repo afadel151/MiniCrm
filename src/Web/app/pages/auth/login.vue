@@ -29,17 +29,17 @@ async function onSubmit() {
   errorMessage.value = null
   loading.value = true
   try {
-    const res = await $fetch<{ user: UserDto }>('/api/auth/login', {
-      method: 'POST',
-      body: form,
-    })
+    const res = await $fetch<{ user: UserDto }>('/api/auth/login', { method: 'POST', body: form })
     loggedInUser.value = res.user
-    await refreshClientSession() // syncs useUserSession() with the cookie the server route just set
-
-    // if (res.user.mustChangePassword) { await navigateTo('/account/change-password'); return }
-    await navigateTo('/dashboard')
+    await refreshClientSession()
+    await navigateTo({path: '/dashboard'})
   } catch (err: any) {
-    errorMessage.value = getErrorMessage(err)
+    // errorMessage.value = err.data.data.code;
+    if (err.data?.data.code == 'email-not-confirmed') {
+      await navigateTo({ path: '/auth/confirmation-sent', query: { pending: '1', email: form.email } })
+      return
+    }
+    errorMessage.value = err.data?.data.message ?? 'Une erreur est survenue.'
   } finally {
     loading.value = false
   }

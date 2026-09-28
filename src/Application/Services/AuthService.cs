@@ -193,6 +193,9 @@ public class AuthService(
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user is null)
             return new LoginResponse(ErrorCode: 404, Auth: null);
+        // TODO: write email confirmation code
+        // if (!user.EmailConfirmed)
+        //     return new LoginResponse(ErrorCode: 405, Auth: null);
 
         if (await _userManager.IsLockedOutAsync(user))
             return new LoginResponse(ErrorCode: 403, Auth: null);
@@ -269,7 +272,7 @@ public class AuthService(
 
         // Get roles (UserManager.GetRolesAsync)
         var roles = await _userManager.GetRolesAsync(user);
-
+        _logger.LogInformation("roles : ${}", roles.Count);
         return new UserDto(
             Id: user.Id,
             Email: user.Email!,

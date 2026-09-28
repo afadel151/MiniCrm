@@ -34,8 +34,16 @@ async function onSubmit() {
   }
 
   loading.value = true
+
   try {
-      const data : RegisterResponseData = await $fetch('/api/auth/register', { method: 'POST', body: { ...form, accountType: 'client' }})
+      const data : RegisterResponseData = await $fetch(
+          '/api/auth/register',
+          {
+            method: 'POST', 
+            body: { ...form, 
+              accountType: 'client' 
+            }
+          });
     await navigateTo({ path: "/auth/login", query: { registered: '1',email: data.email }})
   } catch (err: any) {
     errorMessage.value = getErrorMessage(err)
@@ -48,7 +56,7 @@ async function onSubmit() {
 <template>
   <Card class="w-full max-w-md">
     <CardHeader>
-      <CardTitle class="text-2xl">Créer un compte</CardTitle>
+      <CardTitle class="text-2xl">Créer un compte client</CardTitle>
       <CardDescription>Renseignez vos informations pour vous inscrire.</CardDescription>
     </CardHeader>
 
