@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import 'vue-sonner/style.css'
 import { Toaster } from '@/components/ui/sonner'
+import { ProgressIndicator } from 'reka-ui';
 </script>
 <template>
-   <Toaster />
+  <NuxtLoadingIndicator />
+  <Toaster />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
