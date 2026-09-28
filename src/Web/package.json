@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@inspira-ui/plugins": "^0.0.2",
     "@lucide/vue": "^1.48.0",
     "@types/node": "^26.6.3",
     "@vee-validate/zod": "^4.15.1",
@@ -17,12 +18,14 @@
     "@vueuse/core": "^15.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "motion-v": "^2.5.1",
     "nuxt": "^4.5.2",
     "nuxt-auth-utils": "0.5.30",
     "radix-vue": "^1.9.17",
     "reka-ui": "^2.10.5",
     "shadcn-nuxt": "2.8.2",
     "tailwind-merge": "^3.7.0",
+    "theme-colors": "^0.1.0",
     "vee-validate": "^4.15.1",
     "vue": "^3.5.43",
     "vue-router": "^5.3.1",
