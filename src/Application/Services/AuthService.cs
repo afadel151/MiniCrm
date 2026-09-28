@@ -2,12 +2,15 @@
 using System.ComponentModel;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MiniCrm.Application.DTO;
+using MiniCrm.Core.Enums;
 using MiniCrm.Core.Exceptions;
 using MiniCrm.Core.Services;
 using MiniCrm.Infrastructure.Identity;
 using MiniCrm.Infrastructure.Persistence;
+using MiniCrm.Infrastructure.Persistence.Entities;
 
 namespace MiniCrm.Application.Services;
 
@@ -28,9 +31,11 @@ public class AuthService(
     RoleManager<ApplicationRole> roleManager,
     ITokenService tokenService,
     IGoogleAuthService googleAuthService,
+    IDbContextFactory<AppDbContext> dbFactory,
     ILogger<AuthService> logger) : IAuthService
 {
 
+    private readonly IDbContextFactory<AppDbContext> _dbFactory = dbFactory;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
     private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
@@ -107,7 +112,10 @@ public class AuthService(
         var existingUser = await _userManager.FindByEmailAsync(request.Email);
         if (existingUser is not null)
         {
-            throw new IdentityException("An account with this email already exists.");
+            return new RegisterResponse(
+                Data: null,
+                ErrorCode: 409
+            );
         }
 
         // 2. Ensure the "BusinessManager" role exists
@@ -120,7 +128,6 @@ public class AuthService(
             Email = request.Email,
             FirstName = request.FirstName.Trim(),
             LastName = request.LastName.Trim(),
-            PhoneNumber = request.PhoneNumber,
             IsActive = true,
             MustChangePassword = true, // Force password change on first login for business accounts
             CreatedAtUtc = DateTime.UtcNow
@@ -144,7 +151,29 @@ public class AuthService(
         }
 
         // TODO: Create the Business/Tenant entity in your database here
-        // e.g., await _businessRepository.CreateAsync(new Business { Name = request.BusinessName, OwnerId = user.Id });
+        var business = new Business
+        {
+            Name = request.BusinessName,
+            CreatedAtUtc = DateTime.UtcNow,
+        };
+        await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+
+        db.Businesses.Add(business);
+
+        await db.SaveChangesAsync();
+
+        var membership = new BusinessMembership
+        {
+            UserId = user.Id,
+            BusinessId = business.Id,
+            Role = BusinessMemberRole.Manager,
+            IsPrimaryOwner = true,
+        };
+
+        db.BusinessMemberships.Add(membership);
+
+        await db.SaveChangesAsync();
+
 
         _logger.LogInformation(
             "New Business registered: {BusinessName} by {Email} ({UserId})",
