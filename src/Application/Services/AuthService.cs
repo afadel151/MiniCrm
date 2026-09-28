@@ -20,6 +20,7 @@ public interface IAuthService
     Task<AuthResponse> GoogleLoginAsync(GoogleLoginRequest request);
     Task<UserDto> GetCurrentUserAsync(Guid userId);
     Task<AuthResponse?> RefreshAsync(RefreshTokenRequest request, CancellationToken ct = default);
+    Task LogoutAsync(RefreshTokenRequest request, CancellationToken ct = default);
 }
 public class AuthService(
     UserManager<ApplicationUser> userManager,
@@ -38,7 +39,6 @@ public class AuthService(
     private readonly ILogger<AuthService> _logger = logger;
     public async Task<RegisterResponse> RegisterUserAsync(RegisterUserRequest request)
     {
-        // 1. Check if email already exists (UserManager.FindByEmailAsync)
         var existingUser = await _userManager.FindByEmailAsync(request.Email);
         if (existingUser is not null)
         {
@@ -223,7 +223,7 @@ public class AuthService(
         await _userManager.UpdateAsync(user);
 
         // 4. Generate JWT token
-        var token = await _tokenService.GenerateTokenAsync(user,Refresh: true);
+        var token = await _tokenService.GenerateTokenAsync(user, Refresh: true);
 
         _logger.LogInformation("Google login: {Email} ({UserId})", user.Email, user.Id);
 
@@ -273,6 +273,7 @@ public class AuthService(
     public Task<AuthResponse?> RefreshAsync(RefreshTokenRequest request, CancellationToken ct = default)
         => _tokenService.RefreshAsync(request.RefreshToken, ct);
 
-    
+    public Task LogoutAsync(RefreshTokenRequest request, CancellationToken ct = default)
+        => _tokenService.RevokeAsync(request.RefreshToken, ct);
 
 }
