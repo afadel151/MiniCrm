@@ -3,9 +3,7 @@ import { LoginResponse, LoginRequest, UserDto } from "#shared/auth/auth.dto";
 
 const bodySchema = z.object({
   email: z.string().email(),
-  password: z
-    .string()
-    .min(1, "Password is required")
+  password: z.string().min(1, "Password is required"),
 });
 
 export default defineEventHandler(async (event) => {
@@ -47,17 +45,17 @@ export default defineEventHandler(async (event) => {
         loggedInAt: Date.now(),
       },
       {
-        maxAge: response.expiresIn, // Cookie expires when JWT expires
+        maxAge: SESSION_MAX_AGE, // Cookie expires when JWT expires
       },
     );
     return { user: userProfile };
   } catch (error: any) {
-    const detail =
-      error.data?.detail ?? error.data?.title ?? "Login failed.";
+    const problem = error?.data;
+    const detail = problem?.detail ?? problem?.title ?? "Login failed.";
     throw createError({
       statusCode: error.response?.status ?? error.statusCode ?? 400,
       message: detail,
-      data: { message: detail },
+      data: { message: detail, code: problem?.code },
     });
   }
 });
