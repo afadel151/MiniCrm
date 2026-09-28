@@ -1,0 +1,37 @@
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  tokenType: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface UserDto {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  roles: string[];
+  mustChangePassword: boolean;
+}
+
+export interface RegisterUserRequest {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface RegisterResponse {
+    data : RegisterResponseData;
+    error_code?: number;
+}
+
+export interface RegisterResponseData {
+    email: string
+}
