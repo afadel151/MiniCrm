@@ -26,12 +26,21 @@ export interface RegisterUserRequest {
   firstName: string;
   lastName: string;
 }
-
+export interface RegisterBusinessRequest {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+  businessName : string;
+  phoneNumber?: string;
+  // teamSize: number;
+}
 export interface RegisterResponse {
-    data : RegisterResponseData;
-    error_code?: number;
+  data: RegisterResponseData;
+  error_code?: number;
 }
 
 export interface RegisterResponseData {
-    email: string
+  email: string;
 }

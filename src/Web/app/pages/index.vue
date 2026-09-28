@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { Button } from '~/components/ui/button'
-declare module 'nuxt/app' {
-  interface NuxtLayouts {
-    'guest': unknown
-  }
-}
 definePageMeta({ layout: 'guest' })
 </script>
 
