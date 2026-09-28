@@ -74,13 +74,24 @@ public class AuthController(IAuthService authService) : ControllerBase
                 200 => Ok(result.Auth),
                 401 => Problem(statusCode: StatusCodes.Status403Forbidden,
                     title: "Account deactivated",
-                    detail: "Your account has been deactivated. Contact support."),
+                    detail: "Your account has been deactivated. Contact support.",
+                    extensions: new Dictionary<string, object?> { ["code"] = "account-deactivated" }
+                    ),
                 403 => Problem(statusCode: StatusCodes.Status423Locked,
                     title: "Account locked",
-                    detail: "Your account is locked. Try again later."),
+                    detail: "Your account is locked. Try again later.",
+                    extensions: new Dictionary<string, object?> { ["code"] = "account-locked" }
+                    ),
                 402 or 404 => Problem(statusCode: StatusCodes.Status401Unauthorized,
                     title: "Invalid credentials",
-                    detail: "Invalid email or password."),
+                    detail: "Invalid email or password.",
+                    extensions: new Dictionary<string, object?> { ["code"] = "invalid-credentials" }
+                ),
+                405 => Problem(statusCode: StatusCodes.Status403Forbidden,
+                    title: "Email not confirmed",
+                    detail: "Your need to confirm your email to access your account.",
+                    extensions: new Dictionary<string, object?> { ["code"] = "email-not-confirmed" }
+                    ),
                 _ => Problem(statusCode: StatusCodes.Status500InternalServerError,
                     title: "Login failed"),
             };
