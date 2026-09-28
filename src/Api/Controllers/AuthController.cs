@@ -15,13 +15,37 @@ public class AuthController(IAuthService authService) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
 
-    [HttpPost("register")]
+    [HttpPost("register/client")]
     [AllowAnonymous]
-    public async Task<ActionResult<RegisterResponseDto>> RegisterUser([FromBody] RegisterUserRequest request)
+    public async Task<ActionResult<RegisterResponseDto>> RegisterClient([FromBody] RegisterUserRequest request)
     {
         try
         {
             var result = await _authService.RegisterUserAsync(request);
+            return result.ErrorCode switch
+            {
+                200 => Ok(result.Data),
+                409 => Problem(statusCode: StatusCodes.Status409Conflict,
+                    title: "Duplicate email",
+                    detail: "An account with this email already exists."),
+                _ => Problem(statusCode: StatusCodes.Status500InternalServerError,
+                    title: "Registration failed"),
+            };
+        }
+        catch (IdentityException ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, detail: ex.Message);
+        }
+    }
+
+
+    [HttpPost("register/business")]
+    [AllowAnonymous]
+    public async Task<ActionResult<RegisterResponseDto>> RegisterBusiness([FromBody] RegisterBusinessRequest request)
+    {
+        try
+        {
+            var result = await _authService.RegisterBusinessAsync(request);
             return result.ErrorCode switch
             {
                 200 => Ok(result.Data),
