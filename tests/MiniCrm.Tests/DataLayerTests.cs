@@ -16,7 +16,7 @@ public sealed class DataLayerTests
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        return new AppDbContext(options);
+        return new AppDbContext(options,new DesignTimeTenantAccessor());
     }
 
     [Fact]

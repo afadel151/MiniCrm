@@ -31,7 +31,7 @@ public class LocalTimeTests
     {
         var fakeClock = new TestTimeProvider(new DateTimeOffset(2026, 9, 21, 12, 0, 0, TimeSpan.Zero));
 
-        var options = Options.Create(new AppOptions
+        IOptions<AppOptions> options = Options.Create(new AppOptions
         {
             TimeZoneId = "Africa/Algiers",
             CurrencyCode = "DZD",
@@ -39,7 +39,7 @@ public class LocalTimeTests
         });
 
         var localTime = new LocalTime(fakeClock, options);
-        var currentLocal = localTime.GetCurrentLocal();
+        DateTime currentLocal = localTime.GetCurrentLocal();
 
         currentLocal.ShouldBe(new DateTime(2026, 9, 21, 13, 0, 0)); // UTC+1
     }

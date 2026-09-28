@@ -10,8 +10,8 @@ public class ArchitectureTests
     [Fact]
     public void Core_Assembly_Should_Not_Reference_EntityFramework_Or_Identity()
     {
-        var coreAssembly = typeof(ICoreMarker).Assembly;
-        var referencedAssemblies = coreAssembly.GetReferencedAssemblies();
+        Assembly coreAssembly = typeof(ICoreMarker).Assembly;
+        AssemblyName[] referencedAssemblies = coreAssembly.GetReferencedAssemblies();
 
         string[] forbiddenNamespaces = new[]
         {
@@ -22,7 +22,7 @@ public class ArchitectureTests
             "MiniCrm.Web"
         };
 
-        foreach (var refAssembly in referencedAssemblies)
+        foreach (AssemblyName refAssembly in referencedAssemblies)
         {
             foreach (string? forbidden in forbiddenNamespaces)
             {

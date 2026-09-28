@@ -8,9 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MiniCrm.Core\MiniCrm.Core.csproj" />
-    <ProjectReference Include="..\..\src\MiniCrm.Infrastructure\MiniCrm.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\MiniCrm.Web\MiniCrm.Web.csproj" />
+    <ProjectReference Include="..\..\src\Core\MiniCrm.Core.csproj" />
+    <ProjectReference Include="..\..\src\Infrastructure\MiniCrm.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
