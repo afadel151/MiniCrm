@@ -19,7 +19,6 @@ public sealed record RegisterUserRequest
     [Required, MaxLength(100)]
     public string LastName { get; init; } = string.Empty;
 }
-
 /// <summary>
 /// Business registration (gets BusinessManager role)
 /// </summary>
@@ -43,8 +42,6 @@ public sealed record RegisterBusinessRequest
     [Required, MaxLength(200)]
     public string BusinessName { get; init; } = string.Empty;
 
-    [MaxLength(50)]
-    public string? PhoneNumber { get; init; }
 }
 
 // ==========================================
