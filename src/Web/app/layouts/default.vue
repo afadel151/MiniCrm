@@ -9,8 +9,8 @@ async function logout() {
 </script>
 
 <template>
-  <div class="flex min-h-svh flex-col bg-muted/40">
-    <header class="border-b bg-background">
+  <!-- <div class="flex min-h-svh flex-col bg-muted/40"> -->
+    <!-- <header class="border-b bg-background">
       <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <NuxtLink to="/" class="text-lg font-semibold">MiniCRM</NuxtLink>
         <nav class="flex items-center gap-2" v-if="!loggedIn">
@@ -28,14 +28,14 @@ async function logout() {
             </Button>
         </nav>
       </div>
-    </header>
+    </header> -->
 
-    <main class="flex flex-1 items-center justify-center p-4">
+    <!-- <main class="flex flex-1 items-center justify-center p-4">-->
       <slot />
-    </main>
+    <!-- </main> -->
 
-    <footer class="py-4 text-center text-sm text-muted-foreground">
+    <!-- <footer class="py-4 text-center text-sm text-muted-foreground">
       © {{ new Date().getFullYear() }} MiniCRM
     </footer>
-  </div>
+  </div> -->
 </template>
