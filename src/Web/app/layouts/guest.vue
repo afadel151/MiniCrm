@@ -11,7 +11,7 @@ async function logout() {
 <template>
   <div class="flex min-h-svh flex-col bg-muted/40">
     <header class="border-b bg-background">
-      <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+      <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <NuxtLink to="/" class="text-lg font-semibold">MiniCRM</NuxtLink>
         <nav class="flex items-center gap-2" v-if="!loggedIn">
           <Button variant="ghost" as-child>
@@ -21,7 +21,7 @@ async function logout() {
             <NuxtLink to="/auth/register">Inscription</NuxtLink>
           </Button>
         </nav>
-        <nav v-else>
+        <nav v-else class="flex items-center gap-2">
             <p>{{  user?.email }}</p>
             <Button @click="logout">
               Logout
@@ -30,7 +30,7 @@ async function logout() {
       </div>
     </header>
 
-    <main class="flex flex-1 items-center justify-center p-4">
+    <main >
       <slot />
     </main>
 
