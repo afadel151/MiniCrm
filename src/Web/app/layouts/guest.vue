@@ -18,7 +18,7 @@ async function logout() {
             <NuxtLink to="/auth/login">Connexion</NuxtLink>
           </Button>
           <Button as-child>
-            <NuxtLink to="/auth/register">Inscription</NuxtLink>
+            <NuxtLink to="/auth/client/register">Inscription</NuxtLink>
           </Button>
         </nav>
         <nav v-else>
