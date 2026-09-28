@@ -103,6 +103,12 @@ public class AuthController(IAuthService authService) : ControllerBase
         }
     }
 
-
+    [HttpPost("logout")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest request, CancellationToken ct)
+    {
+        await _authService.LogoutAsync(request, ct);
+        return NoContent();
+    }
 }
 
