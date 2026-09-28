@@ -44,3 +44,14 @@ export interface RegisterResponse {
 export interface RegisterResponseData {
   email: string;
 }
+
+ 
+export interface ConfirmEmailRequest {
+  userId: string
+  code: string // base64url-encoded Identity confirmation token
+}
+ 
+export interface ResendConfirmationRequest {
+  email: string
+}
+ 
