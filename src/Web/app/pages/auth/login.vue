@@ -37,7 +37,7 @@ async function onSubmit() {
     await refreshClientSession() // syncs useUserSession() with the cookie the server route just set
 
     // if (res.user.mustChangePassword) { await navigateTo('/account/change-password'); return }
-    // await navigateTo('/dashboard')
+    await navigateTo('/dashboard')
   } catch (err: any) {
     errorMessage.value = getErrorMessage(err)
   } finally {
