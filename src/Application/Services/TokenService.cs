@@ -21,6 +21,7 @@ public interface ITokenService
     Task<AuthResponse> GenerateTokenAsync(ApplicationUser user, bool Refresh = false);
     Task<string> GenerateRefreshTokenAsync(ApplicationUser user, CancellationToken cancellationToken = default);
     Task<AuthResponse?> RefreshAsync(string rawRefreshToken, CancellationToken cancellationToken = default);
+    Task RevokeAsync(string rawRefreshToken, CancellationToken ct = default);
 }
 
 public class TokenService(UserManager<ApplicationUser> userManager, IOptions<JwtOptions> jwtOptions, IDbContextFactory<AppDbContext> dbFactory) : ITokenService
@@ -31,6 +32,7 @@ public class TokenService(UserManager<ApplicationUser> userManager, IOptions<Jwt
     private const int RefreshTokenDays = 7;
     private const string ReasonRotated = "Rotated";
     private const string ReasonReuse = "Reuse detected";
+    private const string ReasonLogout = "Logout";
     private static readonly TimeSpan RotationGrace = TimeSpan.FromSeconds(10);
     private static string NewRawToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     private static string Hash(string raw) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(raw)));
@@ -152,5 +154,26 @@ public class TokenService(UserManager<ApplicationUser> userManager, IOptions<Jwt
 
         var access = await GenerateTokenAsync(user); // reloads roles and MustChangePassword
         return access with { RefreshToken = newRaw };
+    }
+
+    public async Task RevokeAsync(string rawRefreshToken, CancellationToken ct = default)
+    {
+        var now = DateTime.UtcNow;
+        await using var db = await _dbFactory.CreateDbContextAsync(ct);
+
+        // Follow the rotation chain: the cookie can hold a token that was rotated a moment ago.
+        string? hash = Hash(rawRefreshToken);
+        for (var i = 0; i < 5 && hash is not null; i++)
+        {
+            var token = await db.RefreshTokens.SingleOrDefaultAsync(t => t.TokenHash == hash, ct);
+            if (token is null) break;
+
+            token.RevokedAtUtc ??= now;
+            // Overwriting "Rotated" also closes the grace window, so this token can't be refreshed after logout.
+            token.RevokedReason = ReasonLogout;
+            hash = token.ReplacedByTokenHash;
+        }
+
+        await db.SaveChangesAsync(ct);
     }
 }
