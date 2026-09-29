@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import AppSidebar from "@/components/AppSidebar.vue"
 import {
   Breadcrumb,
@@ -15,11 +14,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import BusinessOwnerSidebar from "~/components/BusinessOwnerSidebar.vue";
 </script>
 
 <template>
   <SidebarProvider>
-    <AppSidebar />
+    <BusinessOwnerSidebar />
     <SidebarInset>
       <header
         class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">

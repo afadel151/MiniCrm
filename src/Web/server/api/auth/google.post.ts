@@ -3,20 +3,21 @@ import { LoginResponse, UserDto } from "#shared/auth/auth.dto";
 
 const bodySchema = z.object({
   idToken: z.string().min(1, "Google ID token is required"),
-  role: z.enum(["Client", "BusinessManager"]).optional(),
-  businessName: z.string().optional(),
+  role: z.enum(["Client", "BusinessManager",""]).optional(),
+  businessName: z.string().min(0).optional().nullable(),
 });
 
 export default defineEventHandler(async (event) => {
+  // console.log("### body : );
   const body = await readValidatedBody(event, bodySchema.parse);
   const config = useRuntimeConfig();
-
+  console.log("### body : "+body);
   try {
     const response = await $fetch<LoginResponse>(
       `${config.apiBaseUrl}/api/auth/login/google`,
       { method: "POST", body: body },
     );
-    console.log(response);
+    // console.log(response);
     
 
     const userProfile = await $fetch<UserDto>(
@@ -47,7 +48,7 @@ export default defineEventHandler(async (event) => {
 
     return { user: userProfile };
   } catch (error: any) {
-    console.log(error);
+    console.log("error: "+error);
     
     const problem = error?.data;
     const detail =
