@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'business_owner' })
+definePageMeta({ layout: 'business-owner' })
 
 </script>
 
