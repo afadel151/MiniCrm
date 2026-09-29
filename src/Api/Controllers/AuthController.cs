@@ -163,6 +163,14 @@ public class AuthController(IAuthService authService) : ControllerBase
                 detail: "Please provide your company name to finish creating your account.",
                 extensions: new Dictionary<string, object?> { ["code"] = "business-name-required" });
         }
+        catch (RedirectToRegisterException)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Google Account not registered",
+                detail: "Please Register to be able to use the google sign in.",
+                extensions: new Dictionary<string, object?> { ["code"] = "redirect-to-register" });
+        }
         catch (IdentityException ex)
         {
             return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: ex.Message);

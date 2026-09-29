@@ -50,7 +50,7 @@ const { isMobile } = useSidebar()
             <Avatar class="h-8 w-8 rounded-lg">
               <UserCircle />
               <AvatarFallback class="rounded-lg">
-                CN
+                {{ user?.firstName }}
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">

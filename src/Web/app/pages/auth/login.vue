@@ -108,7 +108,7 @@ onMounted(() => {
     </CardContent>
 
     <CardFooter class="justify-center flex-col space-y-1  text-sm text-muted-foreground">
-      <GoogleSignInButton @success="navigateByRole" @error="msg => errorMessage = msg" />
+      <GoogleSignInButton @register="navigateTo('/auth/register')" @success="navigateByRole" @error="msg => errorMessage = msg" />
       Pas encore de compte ?
       <NuxtLink to="/auth/register" class="ml-1 font-medium text-foreground underline underline-offset-4">
         Créer un compte

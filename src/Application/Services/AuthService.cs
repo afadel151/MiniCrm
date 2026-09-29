@@ -245,9 +245,19 @@ public class AuthService(
         var payload = await _googleAuthService.ValidateAsync(request.IdToken)
             ?? throw new IdentityException("Google authentication failed. Invalid token.");
         var user = await _userManager.FindByEmailAsync(payload.Email);
+        _logger.LogInformation("request role {Role}", request.Role?.GetType().FullName );
+        _logger.LogInformation("request  {Req}",request);
+
         if (user is null)
         {
-            var role = request.Role ?? AppRoles.Client;
+            if (string.IsNullOrEmpty(request.Role))
+            {
+                _logger.LogInformation("null role");
+
+                throw new RedirectToRegisterException();
+            }
+            var role = request.Role;
+            _logger.LogInformation("role {Role}",role);
             if (role is not (AppRoles.Client or AppRoles.BusinessManager))
                 throw new IdentityException("Invalid role.");
 

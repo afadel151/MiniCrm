@@ -5,6 +5,7 @@ const props = defineProps<{ role?: 'client' | 'business' }>()
 const emit = defineEmits<{
     (e: 'success', user: UserDto): void
     (e: 'error', message: string): void
+    (e: 'register'): void
 }>()
 
 const config = useRuntimeConfig()
@@ -66,6 +67,8 @@ async function onCredentialResponse(response: any) {
         if (err.data?.data.code === 'business-name-required') {
             needsBusinessName.value = true   // stay here, show the company name form
             return
+        }else if(err.data?.data.code === 'redirect-to-register') {
+            emit('register');
         }
         emit('error', err.data?.data.message ?? 'Google sign-in failed.')
     }
