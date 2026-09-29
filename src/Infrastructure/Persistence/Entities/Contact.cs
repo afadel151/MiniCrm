@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MiniCrm.Core.Enums;
 using MiniCrm.Infrastructure.Identity;
 namespace MiniCrm.Infrastructure.Persistence.Entities;
 
@@ -25,15 +26,18 @@ public partial class Contact
 
     public string? Country { get; set; }
 
-    public DateTime CreatedAtUtc { get; set; }
 
     public Guid CreatedByUserId { get; set; }
-
-    public DateTime? UpdatedAtUtc { get; set; }
+    public int BusinessId {get;set;}
 
     public Guid UpdatedByUserId { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public ContactType ContactType {get;set;}
+    public DateTime CreatedAtUtc { get; set; }
+
+    public DateTime? UpdatedAtUtc { get; set; }
 
     public DateTime? DeletedAtUtc { get; set; }
 
@@ -41,7 +45,6 @@ public partial class Contact
 
     public virtual Company? Company { get; set; }
     public virtual Business? Business { get; set; }
-    public int BusinessId {get;set;}
 
     public virtual ApplicationUser CreatedByUser { get; set; } = null!;
 

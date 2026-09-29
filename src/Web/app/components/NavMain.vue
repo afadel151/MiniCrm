@@ -43,13 +43,13 @@ defineProps<{
         class="group/collapsible"
       >
         <SidebarMenuItem>
-          <CollapsibleTrigger as-child>
+          <!-- <CollapsibleTrigger as-child> -->
             <SidebarMenuButton :tooltip="item.title">
               <component :is="item.icon" v-if="item.icon" />
               <span>{{ item.title }}</span>
-              <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+              <!-- <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> -->
             </SidebarMenuButton>
-          </CollapsibleTrigger>
+          <!-- </CollapsibleTrigger>
           <CollapsibleContent>
             <SidebarMenuSub>
               <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
@@ -60,7 +60,7 @@ defineProps<{
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             </SidebarMenuSub>
-          </CollapsibleContent>
+          </CollapsibleContent> -->
         </SidebarMenuItem>
       </Collapsible>
     </SidebarMenu>
