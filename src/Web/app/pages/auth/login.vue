@@ -18,7 +18,8 @@ definePageMeta({ layout: 'guest' })
 const route = useRoute()
 const justRegistered = computed(() => route.query.registered === '1')
 
-const { fetch: refreshClientSession } = useUserSession()
+const { loggedIn, user, session, fetch: refreshClientSession, clear, openInPopup } = useUserSession()
+
 
 const form = reactive<LoginRequest>({ email: justRegistered.value ? route.query.email as string : "", password: "" })
 const errorMessage = ref<string | null>(null)
@@ -32,18 +33,7 @@ async function onSubmit() {
     const res = await $fetch<{ user: UserDto }>('/api/auth/login', { method: 'POST', body: form })
     loggedInUser.value = res.user
     await refreshClientSession()
-    const roleRoutes: Record<string, string> = {
-      Admin: "admin",
-      BusinessManager: "business_manager",
-      BusinessStaff: "business_staff",
-      Client: "client"
-    };
-
-    const role = loggedInUser.value.roles.find(r => r in roleRoutes);
-
-    if (role) {
-      await navigateTo(`/${roleRoutes[role]}/dashboard`);
-    }
+    await navigateByRole(loggedInUser.value)
   } catch (err: any) {
     // errorMessage.value = err.data.data.code;
     if (err.data?.data.code == 'email-not-confirmed') {
@@ -55,6 +45,31 @@ async function onSubmit() {
     loading.value = false
   }
 }
+function navigateByRole(user: UserDto) {
+  const roleRoutes: Record<string, string> = {
+    Admin: 'admin',
+    BusinessManager: 'business_manager',
+    BusinessStaff: 'business_staff',
+    Client: 'client',
+  }
+  const role = user.roles.find(r => r in roleRoutes)
+  if (role) return navigateTo(`/${roleRoutes[role]}/dashboard`)
+  return navigateTo('/')
+}
+async function onGoogleSuccess(user: UserDto) {
+  loggedInUser.value = user
+  await navigateByRole(user)
+}
+
+function onGoogleError(message: string) {
+  errorMessage.value = message
+}
+
+onMounted(() => {
+  if (loggedIn.value == true) {
+    navigateByRole(user.value!)
+  }
+})
 </script>
 
 <template>
@@ -88,10 +103,12 @@ async function onSubmit() {
         <Button type="submit" class="w-full" :disabled="loading">
           {{ loading ? 'Connexion…' : 'Se connecter' }}
         </Button>
+
       </form>
     </CardContent>
 
-    <CardFooter class="justify-center text-sm text-muted-foreground">
+    <CardFooter class="justify-center flex-col space-y-1  text-sm text-muted-foreground">
+      <GoogleSignInButton @success="navigateByRole" @error="msg => errorMessage = msg" />
       Pas encore de compte ?
       <NuxtLink to="/auth/register" class="ml-1 font-medium text-foreground underline underline-offset-4">
         Créer un compte
