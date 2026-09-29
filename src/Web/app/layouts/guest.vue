@@ -1,41 +1,46 @@
 <script setup lang="ts">
 import { Button } from '~/components/ui/button'
-const { loggedIn, user, session, fetch : refreshClientSession, clear, openInPopup } = useUserSession()
+const { loggedIn, user, fetch: refreshClientSession } = useUserSession()
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
-  await refreshClientSession() // the cookie is gone, so this makes loggedIn false on the client
+  await refreshClientSession()
   await navigateTo('/auth/login')
 }
 </script>
 
 <template>
-  <div class="flex min-h-svh flex-col bg-muted/40">
-    <header class="border-b bg-background">
-      <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <NuxtLink to="/" class="text-lg font-semibold">MiniCRM</NuxtLink>
-        <nav class="flex items-center gap-2" v-if="!loggedIn">
-          <Button variant="ghost" as-child>
-            <NuxtLink to="/auth/login">Connexion</NuxtLink>
+  <div class="min-h-screen bg-background text-foreground">
+    <header class="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
+      <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        <NuxtLink to="/" class="flex items-center gap-2">
+          <div class="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+            <span class="text-sm font-bold">M</span>
+          </div> <span class="text-lg font-semibold tracking-tight"> MiniCRM
+          </span>
+        </NuxtLink>
+        <nav class="hidden items-center gap-6 text-sm text-muted-foreground md:flex"> <a href="#features"
+            class="transition-colors hover:text-foreground"> Fonctionnalités </a> <a href="#dashboard"
+            class="transition-colors hover:text-foreground"> Aperçu </a> </nav>
+        <div class="flex items-center gap-2" v-if="!loggedIn">
+          <Button variant="ghost" as-child class="hidden sm:inline-flex">
+            <NuxtLink to="/auth/login"> Se connecter </NuxtLink>
+          </Button> <Button as-child>
+            <NuxtLink to="/auth/register"> Commencer </NuxtLink>
           </Button>
-          <Button as-child>
-            <NuxtLink to="/auth/register">Inscription</NuxtLink>
+        </div>
+        <div class="flex items-center gap-2" v-else>
+          <p>{{ user?.email }}</p>
+          <Button @click="logout">
+            Logout
           </Button>
-        </nav>
-        <nav v-else class="flex items-center gap-2">
-            <p>{{  user?.email }}</p>
-            <Button @click="logout">
-              Logout
-            </Button>
-        </nav>
+        </div>
+
+
+
       </div>
+
     </header>
-
-    <main >
-      <slot />
-    </main>
-
-    <footer class="py-4 text-center text-sm text-muted-foreground">
-      © {{ new Date().getFullYear() }} MiniCRM
-    </footer>
+    <slot />
   </div>
+
 </template>

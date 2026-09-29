@@ -32,7 +32,18 @@ async function onSubmit() {
     const res = await $fetch<{ user: UserDto }>('/api/auth/login', { method: 'POST', body: form })
     loggedInUser.value = res.user
     await refreshClientSession()
-    await navigateTo({path: '/dashboard'})
+    const roleRoutes: Record<string, string> = {
+      Admin: "admin",
+      BusinessManager: "business_manager",
+      BusinessStaff: "business_staff",
+      Client: "client"
+    };
+
+    const role = loggedInUser.value.roles.find(r => r in roleRoutes);
+
+    if (role) {
+      await navigateTo(`/${roleRoutes[role]}/dashboard`);
+    }
   } catch (err: any) {
     // errorMessage.value = err.data.data.code;
     if (err.data?.data.code == 'email-not-confirmed') {
@@ -65,25 +76,13 @@ async function onSubmit() {
 
         <div class="grid gap-2">
           <Label for="email">E-mail</Label>
-          <Input
-            id="email"
-            v-model="form.email"
-            type="email"
-            autocomplete="username"
-            placeholder="nom@exemple.com"
-            required
-          />
+          <Input id="email" v-model="form.email" type="email" autocomplete="username" placeholder="nom@exemple.com"
+            required />
         </div>
 
         <div class="grid gap-2">
           <Label for="password">Mot de passe</Label>
-          <Input
-            id="password"
-            v-model="form.password"
-            type="password"
-            autocomplete="current-password"
-            required
-          />
+          <Input id="password" v-model="form.password" type="password" autocomplete="current-password" required />
         </div>
 
         <Button type="submit" class="w-full" :disabled="loading">

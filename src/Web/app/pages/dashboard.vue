@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '~/components/ui/card'
 const { user} = useUserSession()
-definePageMeta({ layout: 'guest' })
+// definePageMeta({ layout: 'guest' })
 </script>
 
 
@@ -25,7 +25,7 @@ definePageMeta({ layout: 'guest' })
                 <AlertDescription>Vous devez changer votre mot de passe.</AlertDescription>
             </Alert>
 
-            <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+            <dl class="grid grid-cols-[auto_1fr]  gap-x-4 gap-y-2">
                 <dt class="text-muted-foreground">Nom</dt>
                 <dd class="font-medium">{{ user?.firstName }} {{ user?.lastName }}</dd>
                 <dt class="text-muted-foreground">E-mail</dt>

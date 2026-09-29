@@ -1,41 +1,51 @@
 <script setup lang="ts">
-import { Button } from '~/components/ui/button'
-const { loggedIn, user, fetch : refreshClientSession } = useUserSession()
-async function logout() {
-  await $fetch('/api/auth/logout', { method: 'POST' })
-  await refreshClientSession()
-  await navigateTo('/auth/login')
-}
+
+import AppSidebar from "@/components/AppSidebar.vue"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 </script>
 
 <template>
-  <!-- <div class="flex min-h-svh flex-col bg-muted/40"> -->
-    <!-- <header class="border-b bg-background">
-      <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <NuxtLink to="/" class="text-lg font-semibold">MiniCRM</NuxtLink>
-        <nav class="flex items-center gap-2" v-if="!loggedIn">
-          <Button variant="ghost" as-child>
-            <NuxtLink to="/auth/login">Connexion</NuxtLink>
-          </Button>
-          <Button as-child>
-            <NuxtLink to="/auth/register">Inscription</NuxtLink>
-          </Button>
-        </nav>
-        <nav v-else>
-            {{  user?.email }}
-            <Button @click="logout">
-              Logout
-            </Button>
-        </nav>
-      </div>
-    </header> -->
+  <SidebarProvider>
+    <AppSidebar />
+    <SidebarInset>
+      <header
+        class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <div class="flex items-center gap-2 px-4">
+          <SidebarTrigger class="-ml-1" />
+          <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem class="hidden md:block">
+                <BreadcrumbLink href="#">
+                  Building Your Application
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator class="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </header>
 
-    <!-- <main class="flex flex-1 items-center justify-center p-4">-->
-      <slot />
-    <!-- </main> -->
+      <main class="flex justify-center items-center h-full p-4 pt-0">
+        <slot />
+      </main>
 
-    <!-- <footer class="py-4 text-center text-sm text-muted-foreground">
-      © {{ new Date().getFullYear() }} MiniCRM
-    </footer>
-  </div> -->
+    </SidebarInset>
+  </SidebarProvider>
 </template>

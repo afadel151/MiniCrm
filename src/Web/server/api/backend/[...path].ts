@@ -1,9 +1,9 @@
 // /api/backend/<anything>  ->  <apiBaseUrl>/api/<anything>, with the user's Bearer token attached.
 const ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const
 type Method = (typeof ALLOWED_METHODS)[number]
-const BLOCKED_PATH = /^auth(\/|$)/i // login/register/refresh have their own Nuxt routes
+const BLOCKED_PATH = /^auth(\/|$)/i 
 const SAFE_PATH = /^[A-Za-z0-9._~-]+(\/[A-Za-z0-9._~-]+)*$/
-const FORWARD_HEADERS = ['content-type', 'accept', 'accept-language'] // never cookies, never the browser's Authorization
+const FORWARD_HEADERS = ['content-type', 'accept', 'accept-language'] 
 const MAX_BODY_BYTES = 1_000_000
 
 function isSameOrigin(event: Parameters<typeof getHeader>[0]) {
@@ -24,7 +24,6 @@ export default defineEventHandler(async (event) => {
   const safe = SAFE_PATH.test(path) && !path.split('/').some(segment => segment === '.' || segment === '..')
   if (!safe || BLOCKED_PATH.test(path)) throw createError({ statusCode: 404, message: 'Introuvable.' })
 
-  // Cookie-authenticated proxy: refuse cross-site writes.
   if (method !== 'GET' && !isSameOrigin(event)) {
     throw createError({ statusCode: 403, message: 'Origine non autorisée.' })
   }
@@ -33,7 +32,7 @@ export default defineEventHandler(async (event) => {
   if (hasBody && Number(getHeader(event, 'content-length') ?? 0) > MAX_BODY_BYTES) {
     throw createError({ statusCode: 413, message: 'Corps de requête trop volumineux.' })
   }
-  const body = hasBody ? await readRawBody(event, false) : undefined // read once, reusable if the call is retried
+  const body = hasBody ? await readRawBody(event, false) : undefined 
 
   const headers: Record<string, string> = {}
   for (const name of FORWARD_HEADERS) {
