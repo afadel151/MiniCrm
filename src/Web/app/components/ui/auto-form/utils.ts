@@ -23,11 +23,11 @@ export function beautifyObjectName(string: string) {
  * @returns index or undefined
  */
 export function getIndexIfArray(string: string) {
-  const indexRegex = /\[(\d+)\]/
+  const indexRegex : RegExp = /\[(\d+)\]/
   // Match the index
   const match = string.match(indexRegex)
   // Extract the index (number)
-  const index = match ? Number.parseInt(match[1]) : undefined
+  const index = match ? Number.parseInt(match[1]!) : undefined
   return index
 }
 
