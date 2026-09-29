@@ -145,5 +145,28 @@ public class AuthController(IAuthService authService) : ControllerBase
         await _authService.LogoutAsync(request, ct);
         return NoContent();
     }
+
+    [HttpPost("login/google")]
+    [AllowAnonymous]
+    public async Task<ActionResult<AuthResponse>> GoogleLogin([FromBody] GoogleLoginRequest request)
+    {
+
+        try
+        {
+            return Ok(await _authService.GoogleLoginAsync(request));
+        }
+        catch (GoogleBusinessNameRequiredException)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status422UnprocessableEntity,
+                title: "Business name required",
+                detail: "Please provide your company name to finish creating your account.",
+                extensions: new Dictionary<string, object?> { ["code"] = "business-name-required" });
+        }
+        catch (IdentityException ex)
+        {
+            return Problem(statusCode: StatusCodes.Status401Unauthorized, detail: ex.Message);
+        }
+    }
 }
 

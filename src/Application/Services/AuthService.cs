@@ -241,25 +241,56 @@ public class AuthService(
     }
     public async Task<AuthResponse> GoogleLoginAsync(GoogleLoginRequest request)
     {
-        // 1. Validate Google ID Token and find/create user
-        var user = await _googleAuthService.ValidateAndGetUserAsync(request.IdToken) ?? throw new IdentityException("Google authentication failed. Invalid token.");
-
-        // 2. Check if account is active
-        if (!user.IsActive)
+        _logger.LogInformation("Performing google login");
+        var payload = await _googleAuthService.ValidateAsync(request.IdToken)
+            ?? throw new IdentityException("Google authentication failed. Invalid token.");
+        var user = await _userManager.FindByEmailAsync(payload.Email);
+        if (user is null)
         {
-            throw new IdentityException("Your account has been deactivated. Contact support.");
-        }
+            var role = request.Role ?? AppRoles.Client;
+            if (role is not (AppRoles.Client or AppRoles.BusinessManager))
+                throw new IdentityException("Invalid role.");
 
-        // 3. Update last login
+            var isBusiness = role == AppRoles.BusinessManager;
+            if (isBusiness && string.IsNullOrWhiteSpace(request.BusinessName))
+                throw new GoogleBusinessNameRequiredException();
+
+            user = new ApplicationUser
+            {
+                UserName = payload.Email,
+                Email = payload.Email,
+                FirstName = payload.GivenName ?? string.Empty,
+                LastName = payload.FamilyName ?? string.Empty,
+                EmailConfirmed = true,
+                IsActive = true,
+                MustChangePassword = false,
+                CreatedAtUtc = DateTime.UtcNow
+            };
+
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded) throw new IdentityException("Failed to create account.");
+
+            await EnsureRoleExistsAsync(role);
+            await _userManager.AddToRoleAsync(user, role);
+            await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
+
+            if (isBusiness)
+                await CreateBusinessWithOwnerAsync(user, request.BusinessName!.Trim());
+        }
+        else
+        {
+            if (!user.IsActive)
+                throw new IdentityException("Your account has been deactivated. Contact support.");
+
+            var logins = await _userManager.GetLoginsAsync(user);
+            if (!logins.Any(l => l.LoginProvider == "Google" && l.ProviderKey == payload.Subject))
+                await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
+        }
         user.LastLoginAtUtc = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
+        _logger.LogInformation("Google auth: {Email} ({UserId})", user.Email, user.Id);
 
-        // 4. Generate JWT token
-        var token = await _tokenService.GenerateTokenAsync(user, Refresh: true);
-
-        _logger.LogInformation("Google login: {Email} ({UserId})", user.Email, user.Id);
-
-        return token;
+        return await _tokenService.GenerateTokenAsync(user, Refresh: true);
     }
 
     public async Task<UserDto> GetCurrentUserAsync(Guid userId)
@@ -270,7 +301,6 @@ public class AuthService(
             throw new IdentityException("User not found or inactive.");
         }
 
-        // Get roles (UserManager.GetRolesAsync)
         var roles = await _userManager.GetRolesAsync(user);
         _logger.LogInformation("roles : ${}", roles.Count);
         return new UserDto(
@@ -284,11 +314,9 @@ public class AuthService(
     }
     private async Task<bool> EnsureRoleExistsAsync(string roleName)
     {
-        // RoleManager.RoleExistsAsync - checks if the role is in the database
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
         if (!roleExists)
         {
-            // RoleManager.CreateAsync - creates the role if missing
             var roleResult = await _roleManager.CreateAsync(new ApplicationRole(roleName));
             if (!roleResult.Succeeded)
             {
@@ -307,5 +335,40 @@ public class AuthService(
 
     public Task LogoutAsync(RefreshTokenRequest request, CancellationToken ct = default)
         => _tokenService.RevokeAsync(request.RefreshToken, ct);
+
+
+    public async Task CreateBusinessWithOwnerAsync(ApplicationUser user, string BusinessName)
+    {
+        try
+        {
+            var business = new Business
+            {
+                Name = BusinessName,
+                CreatedAtUtc = DateTime.UtcNow,
+            };
+            await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+
+            db.Businesses.Add(business);
+
+            await db.SaveChangesAsync();
+
+            var membership = new BusinessMembership
+            {
+                UserId = user.Id,
+                BusinessId = business.Id,
+                Role = BusinessMemberRole.Manager,
+                IsPrimaryOwner = true,
+            };
+
+            db.BusinessMemberships.Add(membership);
+
+            await db.SaveChangesAsync();
+        }
+        catch
+        {
+
+            throw new IdentityException("couldn't create business");
+        }
+    }
 
 }

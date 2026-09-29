@@ -61,6 +61,8 @@ public sealed record GoogleLoginRequest
 {
     [Required]
     public string IdToken { get; init; } = string.Empty;
+    public string? Role {get;set;}          // "Client" | "BusinessManager" — only used for NEW users
+    public string? BusinessName {get;set;}
 }
 
 // ==========================================

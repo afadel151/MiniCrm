@@ -8,6 +8,7 @@ namespace MiniCrm.Application.Services;
 public interface IGoogleAuthService
 {
     Task<ApplicationUser?> ValidateAndGetUserAsync(string googleIdToken);
+    Task<GoogleJsonWebSignature.Payload?> ValidateAsync(string idToken);
 }
 
 public class GoogleAuthService(UserManager<ApplicationUser> userManager, IConfiguration configuration) : IGoogleAuthService
@@ -18,7 +19,7 @@ public class GoogleAuthService(UserManager<ApplicationUser> userManager, IConfig
     public async Task<ApplicationUser?> ValidateAndGetUserAsync(string googleIdToken)
     {
         var googleClientId = _configuration["Authentication:Google:ClientId"];
-        
+
         if (string.IsNullOrEmpty(googleClientId))
             throw new InvalidOperationException("Google Client ID is not configured in appsettings.");
 
@@ -43,15 +44,15 @@ public class GoogleAuthService(UserManager<ApplicationUser> userManager, IConfig
                 Email = payload.Email,
                 FirstName = payload.GivenName ?? string.Empty,
                 LastName = payload.FamilyName ?? string.Empty,
-                EmailConfirmed = true, 
+                EmailConfirmed = true,
                 IsActive = true,
                 CreatedAtUtc = DateTime.UtcNow
             };
-            
+
             var result = await _userManager.CreateAsync(user);
             if (!result.Succeeded) return null;
-            
-            await _userManager.AddToRoleAsync(user, AppRoles.Client); 
+
+            await _userManager.AddToRoleAsync(user, AppRoles.Client);
         }
 
         var logins = await _userManager.GetLoginsAsync(user);
@@ -61,5 +62,20 @@ public class GoogleAuthService(UserManager<ApplicationUser> userManager, IConfig
         }
 
         return user;
+    }
+    public async Task<GoogleJsonWebSignature.Payload?> ValidateAsync(string idToken)
+    {
+        var clientId = _configuration["Authentication:Google:ClientId"]
+            ?? throw new InvalidOperationException("Google Client ID is not configured.");
+
+        try
+        {
+            return await GoogleJsonWebSignature.ValidateAsync(idToken,
+                new GoogleJsonWebSignature.ValidationSettings { Audience = [clientId] });
+        }
+        catch
+        {
+            return null; // bad signature / expired / wrong audience
+        }
     }
 }
