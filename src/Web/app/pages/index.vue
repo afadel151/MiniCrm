@@ -18,7 +18,8 @@ definePageMeta({
 </script>
 
 <template>
-
+  
+  <div>
   <main>
     <section class="relative  z-10 overflow-hidden border-b">
       <Tetris :base="props.base" :square-color="props.squareColor"
@@ -336,4 +337,6 @@ definePageMeta({
       <p>© {{ new Date().getFullYear() }} MiniCRM. Tous droits réservés.</p>
     </div>
   </footer>
+
+  </div>
 </template>

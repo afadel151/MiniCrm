@@ -4,8 +4,10 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   runtimeConfig: {
-    apiBaseUrl: process.env.API_BASE_URL || "https://localhost:5001",
-
+    apiBaseUrl: process.env.API_BASE_URL || "https://localhost:7056",
+    public: {
+      googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID,
+    },
     session: {
       maxAge: 60 * 60,
       cookie: {
