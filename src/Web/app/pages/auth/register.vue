@@ -21,7 +21,7 @@ const roles = [
   {
     to: '/auth/business/register',
     icon: Building2,
-    title: 'Entreprise',
+    title: 'Business',
     description: 'Je vends des produits ou services et je veux gérer mes clients.',
   },
 ] as const

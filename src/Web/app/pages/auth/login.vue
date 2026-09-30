@@ -14,8 +14,15 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 
 definePageMeta({ layout: 'guest' })
+const props = defineProps<{ invitation_link?: string }>()
+
 
 const route = useRoute()
+if (route.params["invitaion_link"]) {
+  // TODO: implement staff login with invitation 
+  console.log("user Invited");
+
+}
 const justRegistered = computed(() => route.query.registered === '1')
 
 const { loggedIn, user, session, fetch: refreshClientSession, clear, openInPopup } = useUserSession()
@@ -48,11 +55,10 @@ async function onSubmit() {
 function navigateByRole(user: UserDto) {
   const roleRoutes: Record<string, string> = {
     Admin: 'admin',
-    BusinessManager: 'business_manager',
-    BusinessStaff: 'business_staff',
+    Business: 'business',
     Client: 'client',
   }
-  const role = user.roles.find(r => r in roleRoutes)
+  const role = user.role
   if (role) return navigateTo(`/${roleRoutes[role]}/dashboard`)
   return navigateTo('/')
 }
@@ -108,7 +114,8 @@ onMounted(() => {
     </CardContent>
 
     <CardFooter class="justify-center flex-col space-y-1  text-sm text-muted-foreground">
-      <GoogleSignInButton @register="navigateTo('/auth/register')" @success="navigateByRole" @error="msg => errorMessage = msg" />
+      <GoogleSignInButton @register="navigateTo('/auth/register')" @success="navigateByRole"
+        @error="msg => errorMessage = msg" />
       Pas encore de compte ?
       <NuxtLink to="/auth/register" class="ml-1 font-medium text-foreground underline underline-offset-4">
         Créer un compte
@@ -133,7 +140,7 @@ onMounted(() => {
         <dt class="text-muted-foreground">E-mail</dt>
         <dd class="font-medium break-all">{{ loggedInUser.email }}</dd>
         <dt class="text-muted-foreground">Rôles</dt>
-        <dd class="font-medium">{{ loggedInUser.roles.join(', ') }}</dd>
+        <dd class="font-medium">{{ loggedInUser.role }}</dd>
       </dl>
     </CardContent>
   </Card>
