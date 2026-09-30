@@ -30,7 +30,7 @@ public partial class Contact
     public Guid CreatedByUserId { get; set; }
     public int BusinessId {get;set;}
 
-    public Guid UpdatedByUserId { get; set; }
+    public Guid? UpdatedByUserId { get; set; }
 
     public bool IsDeleted { get; set; }
 
