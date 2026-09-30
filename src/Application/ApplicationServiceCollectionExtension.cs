@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using MiniCrm.Application.Helpers;
+using MiniCrm.Application.Repositories;
 using MiniCrm.Application.Services;
 using MiniCrm.Infrastructure.Identity;
 
@@ -12,7 +14,11 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<ITokenService,TokenService>();
         services.AddScoped<IGoogleAuthService,GoogleAuthService>();
         services.AddScoped<IAuditService,AuditService>();
+        services.AddScoped<IBusinessService,BusinessService>();
 
+
+        services.AddScoped<IRoleHelper,RoleHelper>();
+        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         return services;
     }
 }
