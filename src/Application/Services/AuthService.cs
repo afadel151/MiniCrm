@@ -291,7 +291,13 @@ public class AuthService(
         {
             if (!user.IsActive)
                 throw new IdentityException("Your account has been deactivated. Contact support.");
-
+            if (!user.EmailConfirmed)
+            {
+                // A local account with an unverified email may belong to a squatter who knows its password.
+                // Google just proved mailbox ownership: kill the local password and confirm the address.
+                if (await _userManager.HasPasswordAsync(user)) await _userManager.RemovePasswordAsync(user);
+                user.EmailConfirmed = true;
+            }
             var logins = await _userManager.GetLoginsAsync(user);
             if (!logins.Any(l => l.LoginProvider == "Google" && l.ProviderKey == payload.Subject))
                 await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
