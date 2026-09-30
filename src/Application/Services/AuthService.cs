@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MiniCrm.Application.DTO;
+using MiniCrm.Application.Helpers;
 using MiniCrm.Core.Enums;
 using MiniCrm.Core.Exceptions;
 using MiniCrm.Core.Services;
@@ -32,16 +33,20 @@ public class AuthService(
     ITokenService tokenService,
     IGoogleAuthService googleAuthService,
     IDbContextFactory<AppDbContext> dbFactory,
+    IRoleHelper roleHelper,
     ILogger<AuthService> logger) : IAuthService
 {
 
     private readonly IDbContextFactory<AppDbContext> _dbFactory = dbFactory;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly IRoleHelper _roleHelper = roleHelper;
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
     private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
     private readonly ITokenService _tokenService = tokenService;
     private readonly IGoogleAuthService _googleAuthService = googleAuthService;
     private readonly ILogger<AuthService> _logger = logger;
+
+
     public async Task<RegisterResponse> RegisterUserAsync(RegisterUserRequest request)
     {
         var existingUser = await _userManager.FindByEmailAsync(request.Email);
@@ -57,7 +62,7 @@ public class AuthService(
         }
 
         // 2. Ensure the "Client" role exists in the database (RoleManager.RoleExistsAsync)
-        var roleCreated = await EnsureRoleExistsAsync(AppRoles.Client);
+        var roleCreated = await _roleHelper.EnsureRoleExistsAsync(AppRoles.Client);
         if (!roleCreated)
         {
             throw new IdentityException("Error creating Client role");
@@ -86,8 +91,7 @@ public class AuthService(
 
         }
 
-        // 5. Assign role (UserManager.AddToRoleAsync)
-        var roleResult = await _userManager.AddToRoleAsync(user, AppRoles.Client);
+        var roleResult = await _roleHelper.SetRoleAsync(user, AppRoles.Client);
         if (!roleResult.Succeeded)
         {
             _logger.LogError("Failed to assign Client role to user {UserId}", user.Id);
@@ -117,11 +121,7 @@ public class AuthService(
                 ErrorCode: 409
             );
         }
-
-        // 2. Ensure the "BusinessManager" role exists
-        await EnsureRoleExistsAsync(AppRoles.BusinessManager);
-
-        // 3. Create the user entity
+        await _roleHelper.EnsureRoleExistsAsync(AppRoles.Business);
         var user = new ApplicationUser
         {
             UserName = request.Email,
@@ -142,8 +142,7 @@ public class AuthService(
             throw new IdentityException($"Registration failed: {errors}");
         }
 
-        // 5. Assign BusinessManager role (UserManager.AddToRoleAsync)
-        var roleResult = await _userManager.AddToRoleAsync(user, AppRoles.BusinessManager);
+        var roleResult = await _roleHelper.SetRoleAsync(user, AppRoles.Business);
         if (!roleResult.Succeeded)
         {
             _logger.LogError("Failed to assign BusinessManager role to user {UserId}", user.Id);
@@ -245,8 +244,8 @@ public class AuthService(
         var payload = await _googleAuthService.ValidateAsync(request.IdToken)
             ?? throw new IdentityException("Google authentication failed. Invalid token.");
         var user = await _userManager.FindByEmailAsync(payload.Email);
-        _logger.LogInformation("request role {Role}", request.Role?.GetType().FullName );
-        _logger.LogInformation("request  {Req}",request);
+        _logger.LogInformation("request role {Role}", request.Role?.GetType().FullName);
+        _logger.LogInformation("request  {Req}", request);
 
         if (user is null)
         {
@@ -257,13 +256,10 @@ public class AuthService(
                 throw new RedirectToRegisterException();
             }
             var role = request.Role;
-            _logger.LogInformation("role {Role}",role);
-            if (role is not (AppRoles.Client or AppRoles.BusinessManager))
+            _logger.LogInformation("role {Role}", role);
+            if (role is not (AppRoles.Client or AppRoles.Business))
                 throw new IdentityException("Invalid role.");
 
-            var isBusiness = role == AppRoles.BusinessManager;
-            if (isBusiness && string.IsNullOrWhiteSpace(request.BusinessName))
-                throw new GoogleBusinessNameRequiredException();
 
             user = new ApplicationUser
             {
@@ -280,12 +276,16 @@ public class AuthService(
             var result = await _userManager.CreateAsync(user);
             if (!result.Succeeded) throw new IdentityException("Failed to create account.");
 
-            await EnsureRoleExistsAsync(role);
-            await _userManager.AddToRoleAsync(user, role);
-            await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
+            await _roleHelper.EnsureRoleExistsAsync(role);
 
-            if (isBusiness)
-                await CreateBusinessWithOwnerAsync(user, request.BusinessName!.Trim());
+            var roleResult = await _roleHelper.SetRoleAsync(user, role);
+
+            if (!roleResult.Succeeded)
+            {
+                throw new IdentityException(
+                    $"Failed to assign role '{role}' to user.");
+            }
+            await _userManager.AddLoginAsync(user, new UserLoginInfo("Google", payload.Subject, "Google"));
         }
         else
         {
@@ -299,7 +299,6 @@ public class AuthService(
         user.LastLoginAtUtc = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
         _logger.LogInformation("Google auth: {Email} ({UserId})", user.Email, user.Id);
-
         return await _tokenService.GenerateTokenAsync(user, Refresh: true);
     }
 
@@ -318,28 +317,11 @@ public class AuthService(
             Email: user.Email!,
             FirstName: user.FirstName,
             LastName: user.LastName,
-            Roles: [.. roles],
+            Role: roles.First(),
             MustChangePassword: user.MustChangePassword
         );
     }
-    private async Task<bool> EnsureRoleExistsAsync(string roleName)
-    {
-        var roleExists = await _roleManager.RoleExistsAsync(roleName);
-        if (!roleExists)
-        {
-            var roleResult = await _roleManager.CreateAsync(new ApplicationRole(roleName));
-            if (!roleResult.Succeeded)
-            {
-                var errors = string.Join("; ", roleResult.Errors.Select(e => e.Description));
-                _logger.LogError("Failed to create role {RoleName}: {Errors}", roleName, errors);
-                return false;
-            }
 
-            _logger.LogInformation("Role created: {RoleName}", roleName);
-            return true;
-        }
-        return true;
-    }
     public Task<AuthResponse?> RefreshAsync(RefreshTokenRequest request, CancellationToken ct = default)
         => _tokenService.RefreshAsync(request.RefreshToken, ct);
 

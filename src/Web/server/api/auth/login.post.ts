@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LoginResponse, LoginRequest, UserDto } from "#shared/auth/auth.dto";
+import { type LoginResponse,type LoginRequest,type UserDto } from "#shared/auth/auth.dto";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
           email: userProfile.email,
           firstName: userProfile.firstName,
           lastName: userProfile.lastName,
-          roles: userProfile.roles,
+          role: userProfile.role,
           mustChangePassword: userProfile.mustChangePassword,
         },
         secure: {

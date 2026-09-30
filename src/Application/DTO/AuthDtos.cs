@@ -19,9 +19,7 @@ public sealed record RegisterUserRequest
     [Required, MaxLength(100)]
     public string LastName { get; init; } = string.Empty;
 }
-/// <summary>
-/// Business registration (gets BusinessManager role)
-/// </summary>
+
 public sealed record RegisterBusinessRequest
 {
     [Required, EmailAddress]
@@ -62,7 +60,6 @@ public sealed record GoogleLoginRequest
     [Required]
     public string IdToken { get; init; } = string.Empty;
     public string? Role {get;set;}          // "Client" | "BusinessManager" — only used for NEW users
-    public string? BusinessName {get;set;}
 }
 
 // ==========================================
@@ -81,7 +78,7 @@ public sealed record UserDto(
     string Email,
     string FirstName,
     string LastName,
-    IList<string> Roles,
+    string Role,
     bool MustChangePassword
 );
 public sealed record RegisterResponse(

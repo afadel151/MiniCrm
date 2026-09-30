@@ -1,14 +1,12 @@
 import { z } from "zod";
-import { LoginResponse, UserDto } from "#shared/auth/auth.dto";
+import {type LoginResponse, type UserDto } from "#shared/auth/auth.dto";
 
 const bodySchema = z.object({
   idToken: z.string().min(1, "Google ID token is required"),
-  role: z.enum(["Client", "BusinessManager",""]).optional(),
-  businessName: z.string().min(0).optional().nullable(),
+  role: z.enum(["Client", "Business",""]).optional(),
 });
 
 export default defineEventHandler(async (event) => {
-  // console.log("### body : );
   const body = await readValidatedBody(event, bodySchema.parse);
   const config = useRuntimeConfig();
   console.log("### body : "+body);
@@ -33,7 +31,7 @@ export default defineEventHandler(async (event) => {
           email: userProfile.email,
           firstName: userProfile.firstName,
           lastName: userProfile.lastName,
-          roles: userProfile.roles,
+          role: userProfile.role,
           mustChangePassword: userProfile.mustChangePassword,
         },
         secure: {
