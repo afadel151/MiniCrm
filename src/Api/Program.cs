@@ -37,6 +37,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowCredentials());         // needed for cookie auth  Blazor
 });
+builder.Services.Configure<InvitationOptions>(builder.Configuration.GetSection(InvitationOptions.Section));
 
 builder.Services.AddCore();                                  // Registers Options
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -61,7 +62,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseExceptionHandler();
 
 app.UseCors("SpaAndMobile");
 app.MapControllers();

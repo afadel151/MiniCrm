@@ -4,11 +4,6 @@ import { Toaster } from '@/components/ui/sonner'
 const { loggedIn, user, fetch: refreshClientSession } = useUserSession()
 const route = useRoute()
 
-async function logout() {
-  await $fetch('/api/auth/logout', { method: 'POST' })
-  await refreshClientSession()
-  await navigateTo('/auth/login')
-}
 onMounted(() => {
   if (
     !loggedIn.value &&
