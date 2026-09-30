@@ -83,8 +83,7 @@ public static class InfrastructureServiceCollectionExtensions
         // 5. Authorization Policies
         services.AddAuthorizationBuilder()
             .AddPolicy(AppPolicies.AdminOnly, policy => policy.RequireRole(AppRoles.Admin))
-            .AddPolicy(AppPolicies.BusinessOnly, policy => policy.RequireRole(AppRoles.Admin, AppRoles.BusinessManager, AppRoles.BusinessStaff))
-            .AddPolicy(AppPolicies.BusinessManagerOnly, policy => policy.RequireRole(AppRoles.Admin, AppRoles.BusinessManager))
+            .AddPolicy(AppPolicies.BusinessOnly, policy => policy.RequireRole(AppRoles.Admin, AppRoles.Business))
             .AddPolicy(AppPolicies.ClientOnly, policy => policy.RequireRole(AppRoles.Client));
 
         // 6. Application Services (Implementations)

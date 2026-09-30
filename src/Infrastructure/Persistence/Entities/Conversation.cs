@@ -17,9 +17,9 @@ public partial class Conversation
 
     public DateTime CreatedAtUtc { get; set; }
 
-    public virtual ICollection<ConversationParticipant> ConversationParticipants { get; set; } = new List<ConversationParticipant>();
+    public virtual ICollection<ConversationParticipant> ConversationParticipants { get; set; } = [];
 
     public virtual ApplicationUser CreatedByUser { get; set; } = null!;
 
-    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+    public virtual ICollection<Message> Messages { get; set; } = [];
 }

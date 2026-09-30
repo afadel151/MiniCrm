@@ -35,6 +35,7 @@ public partial class Contact
     public bool IsDeleted { get; set; }
 
     public ContactType ContactType {get;set;}
+    public ContactSource ContactSource {get;set;}
     public DateTime CreatedAtUtc { get; set; }
 
     public DateTime? UpdatedAtUtc { get; set; }
@@ -53,6 +54,7 @@ public partial class Contact
     public virtual ICollection<Opportunity> Opportunities { get; set; } = [];
 
     public virtual ICollection<Reminder> Reminders { get; set; } = [];
+    public virtual ICollection<Request> Requests { get; set; } = [];
 
     public virtual ApplicationUser? UpdatedByUser { get; set; }
 }

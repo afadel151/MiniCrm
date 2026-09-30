@@ -27,6 +27,7 @@ public partial class AppDbContext(
     public virtual DbSet<PipelineStage> PipelineStages { get; set; }
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
     public virtual DbSet<Reminder> Reminders { get; set; }
+    public virtual DbSet<Request> Requests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -48,6 +49,7 @@ public partial class AppDbContext(
                 .HasPrecision(3)
                 .HasDefaultValueSql("(sysutcdatetime())", "DF_AspNetUsers_CreatedAtUtc");
             entity.Property(e => e.LastLoginAtUtc).HasPrecision(3);
+
         });
 
         builder.Entity<AuditLog>(entity =>
@@ -75,6 +77,7 @@ public partial class AppDbContext(
                 "([IsDeleted] = 0 AND [DeletedAtUtc] IS NULL) OR ([IsDeleted] = 1 AND [DeletedAtUtc] IS NOT NULL)"));
 
             entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.Adress).HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(2000);
             entity.Property(e => e.Website).HasMaxLength(255);
             entity.Property(e => e.CreatedAtUtc).HasPrecision(3).HasDefaultValueSql("(sysutcdatetime())", "DF_Businesses_CreatedAtUtc");
@@ -91,7 +94,7 @@ public partial class AppDbContext(
             entity.Property(e => e.CreatedAtUtc).HasPrecision(3).HasDefaultValueSql("(sysutcdatetime())", "DF_BusinessMemberships_CreatedAtUtc");
 
             entity.HasOne(d => d.Business).WithMany(p => p.Memberships).HasForeignKey(d => d.BusinessId);
-            entity.HasOne(d => d.User).WithMany().HasForeignKey(d => d.UserId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(d => d.User).WithMany(u => u.BusinessMemberships).HasForeignKey(d => d.UserId).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<BusinessRating>(entity =>
@@ -119,8 +122,8 @@ public partial class AppDbContext(
             entity.Property(e => e.UpdatedAtUtc).HasPrecision(3);
 
             entity.HasOne(d => d.Business).WithMany(p => p.ClientRatingsGiven).HasForeignKey(d => d.BusinessId);
-            entity.HasOne(d => d.ClientUser).WithMany().HasForeignKey(d => d.ClientUserId).OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(d => d.RatedByUser).WithMany().HasForeignKey(d => d.RatedByUserId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(d => d.ClientUser).WithMany(u => u.ClientRatings).HasForeignKey(d => d.ClientUserId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(d => d.RatedByUser).WithMany(u => u.RatingsDone).HasForeignKey(d => d.RatedByUserId).OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<Company>(entity =>
@@ -143,7 +146,7 @@ public partial class AppDbContext(
 
             entity.HasOne(d => d.Business).WithMany(p => p.Companies).HasForeignKey(d => d.BusinessId).OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(d => d.CreatedByUser).WithMany()
+            entity.HasOne(d => d.CreatedByUser).WithMany(u => u.CreatedCompanies)
                 .HasForeignKey(d => d.CreatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
@@ -182,7 +185,7 @@ public partial class AppDbContext(
 
             entity.HasOne(d => d.Business).WithMany(p => p.Contacts).HasForeignKey(d => d.BusinessId).OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(d => d.CreatedByUser).WithMany()
+            entity.HasOne(d => d.CreatedByUser).WithMany(u => u.CreatedContacts)
                 .HasForeignKey(d => d.CreatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
@@ -202,7 +205,7 @@ public partial class AppDbContext(
             entity.Property(e => e.DirectKey).HasMaxLength(80);
             entity.Property(e => e.Title).HasMaxLength(200);
 
-            entity.HasOne(d => d.CreatedByUser).WithMany()
+            entity.HasOne(d => d.CreatedByUser).WithMany(u => u.ConversationCreations)
                 .HasForeignKey(d => d.CreatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
@@ -220,7 +223,7 @@ public partial class AppDbContext(
                 .HasForeignKey(d => d.ConversationId)
                 .HasConstraintName("FK_ConvParticipants_Conversations_ConversationId");
 
-            entity.HasOne(d => d.User).WithMany()
+            entity.HasOne(d => d.User).WithMany(u => u.ConversationParticipations)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ConvParticipants_AspNetUsers_UserId");
@@ -248,7 +251,7 @@ public partial class AppDbContext(
                 .HasForeignKey(d => d.OpportunityId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            entity.HasOne(d => d.User).WithMany()
+            entity.HasOne(d => d.User).WithMany(u => u.Interactions)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
@@ -267,7 +270,7 @@ public partial class AppDbContext(
 
             entity.HasOne(d => d.Conversation).WithMany(p => p.Messages).HasForeignKey(d => d.ConversationId);
 
-            entity.HasOne(d => d.SenderUser).WithMany()
+            entity.HasOne(d => d.SenderUser).WithMany(u => u.Messages)
                 .HasForeignKey(d => d.SenderUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
@@ -305,7 +308,7 @@ public partial class AppDbContext(
                 .HasForeignKey(d => d.ContactId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
-            entity.HasOne(d => d.CreatedByUser).WithMany()
+            entity.HasOne(d => d.CreatedByUser).WithMany(u => u.Opportunities)
                 .HasForeignKey(d => d.CreatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
@@ -422,13 +425,38 @@ public partial class AppDbContext(
 
             entity.HasOne(d => d.Contact).WithMany(p => p.Reminders).HasForeignKey(d => d.ContactId);
 
-            entity.HasOne(d => d.CreatedByUser).WithMany()
+            entity.HasOne(d => d.CreatedByUser).WithMany(u => u.Reminders)
                 .HasForeignKey(d => d.CreatedByUserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
             entity.HasOne(d => d.Opportunity).WithMany(p => p.Reminders)
                 .HasForeignKey(d => d.OpportunityId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+        builder.Entity<Request>(entity =>
+        {
+            entity.HasIndex(e => e.ContactId, "IX_Request_ContactId");
+            entity.HasIndex(e => e.Title, "UX_Request_Title").IsUnique().HasFilter("([IsDeleted]=(0))");
+            entity.ToTable(t =>
+                {
+
+                    t.HasCheckConstraint("CK_Request_Deleted",
+                        "([IsDeleted] = 0 AND [DeletedAtUtc] IS NULL) OR ([IsDeleted] = 1 AND [DeletedAtUtc] IS NOT NULL)");
+                    t.HasCheckConstraint("CK_Request_Origin", "[Origin] IN (0,1, 2, 3,4,99)");
+                    t.HasCheckConstraint("CK_Request_Status", "[Status] IN (0,1, 2, 3,4)");
+                    t.HasCheckConstraint("CK_Request_Priority", "[Priority] IN (0,1, 2)");
+                }
+            );
+            entity.HasOne(d => d.Contact).WithMany(p => p.Requests).HasForeignKey(d => d.ContactId).OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(d => d.CreatedByUser).WithMany(u => u.Requests)
+                .HasForeignKey(d => d.CreatedByUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+            entity.Property(e => e.Title).HasMaxLength(200);
+            entity.Property(e => e.Description).HasMaxLength(2000);
+            entity.Property(e => e.Notes).HasMaxLength(255);
+            entity.Property(e => e.DueAtUtc).HasPrecision(3);
+            entity.Property(e => e.DeletedAtUtc).HasPrecision(3);
+            entity.Property(e => e.RowVersion).IsRowVersion().IsConcurrencyToken();
         });
         OnModelCreatingPartial(builder);
     }
