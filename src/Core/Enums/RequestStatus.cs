@@ -2,7 +2,9 @@ namespace MiniCrm.Core.Enums;
 
 public enum RequestStatus : byte
 {
-    Pending   = 0,
-    Done      = 1,
-    Cancelled = 2
+    New   = 0,
+    Working      = 1,
+    WaitingCustomer = 2,
+    Escalated = 3,
+    Closed =4,
 }
