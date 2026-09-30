@@ -13,6 +13,7 @@ public partial class AppDbContext(
 
     public virtual DbSet<AuditLog> AuditLogs { get; set; }
     public virtual DbSet<Business> Businesses { get; set; }
+    public virtual DbSet<BusinessInvitation> BusinessInvitations { get; set; }
     public virtual DbSet<BusinessMembership> BusinessMemberships { get; set; }
     public virtual DbSet<BusinessRating> BusinessRatings { get; set; }
     public virtual DbSet<ClientRating> ClientRatings { get; set; }
@@ -85,7 +86,17 @@ public partial class AppDbContext(
             entity.Property(e => e.DeletedAtUtc).HasPrecision(3);
             entity.Property(e => e.RowVersion).IsRowVersion().IsConcurrencyToken();
         });
-
+        builder.Entity<BusinessInvitation>(e =>
+        {
+            e.Property(x => x.Email).HasMaxLength(254);
+            e.Property(x => x.NormalizedEmail).HasMaxLength(254);
+            e.Property(x => x.TokenHash).HasMaxLength(64).IsFixedLength();
+            e.HasIndex(x => x.TokenHash).IsUnique();
+            // One pending invitation per email per business. Status 0 = Pending.
+            e.HasIndex(x => new { x.BusinessId, x.NormalizedEmail }).IsUnique().HasFilter("[Status] = 0");
+            e.HasOne(x => x.Business).WithMany().HasForeignKey(x => x.BusinessId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.InvitedByUser).WithMany().HasForeignKey(x => x.InvitedByUserId).OnDelete(DeleteBehavior.Restrict);
+        });
         builder.Entity<BusinessMembership>(entity =>
         {
             // One membership row per user per business — a user cannot join the same tenant twice.
