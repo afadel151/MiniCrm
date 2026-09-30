@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MiniCrm.Application.DTO;
+using MiniCrm.Application.Helpers;
 using MiniCrm.Application.Services;
 using MiniCrm.Core.Exceptions;
 using MiniCrm.Infrastructure.Identity;
@@ -10,33 +12,57 @@ namespace MiniCrm.Api.Controllers.Business;
 [Route("api/[controller]")]
 [ApiController]
 // [Authorize(Roles = AppRoles.Business)]
-public class BusinessController(IAuthService authService, IBusinessService businessService) : ControllerBase
+public class BusinessController(IBusinessService businessService) : ControllerBase
 {
-    private readonly IAuthService _authService = authService;
     private readonly IBusinessService _businessService = businessService;
-    // GetBusinessInfos
 
     [HttpGet]
-    public async Task<ActionResult<BusinessInfosResult>> GetBusinessInfos()
+    public async Task<ActionResult<BusinessInfosResult>> ListMine(CancellationToken ct) =>
+            Ok(await _businessService.ListMineAsync(User.GetUserId(), ct));
+
+    [HttpPost]
+    public async Task<ActionResult<BusinessDetail>> Create(CreateBusinessDto dto, CancellationToken ct)
     {
-        var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
-        if (!Guid.TryParse(idClaim, out var userId))
-            return Problem(statusCode: StatusCodes.Status401Unauthorized, title: "Invalid token");
-        try
-        {
-            var infos = await _businessService.GetBusinessInfos(userId);
-            return Ok(infos);
-        }
-        catch(ForbiddenException)
-        {
-            return Problem(statusCode: StatusCodes.Status403Forbidden,title: "Unauthorized", detail: "User not found or inactive.");
-        }
-        catch(DatabaseException)
-        {
-            return Problem(statusCode: StatusCodes.Status500InternalServerError,
-                title: "internal error", detail: "Error fetching businesses.");
-        }
-        // return Ok();
+        var r = await _businessService.CreateAsync(User.GetUserId(), dto, ct);
+        return CreatedAtAction(nameof(Get), new { businessId = r.Id }, r);
+    }
+
+    [HttpGet("{businessId:int}")]
+    public async Task<ActionResult<BusinessDetail>> Get(int businessId, CancellationToken ct) =>
+        Ok(await _businessService.GetAsync(User.GetUserId(), businessId, ct));
+
+    [HttpPut("{businessId:int}")]
+    public async Task<ActionResult<BusinessDetail>> Update(int businessId, UpdateBusinessDto dto, CancellationToken ct) =>
+        Ok(await _businessService.UpdateAsync(User.GetUserId(), businessId, dto, ct));
+
+    [HttpDelete("{businessId:int}")]
+    public async Task<IActionResult> Delete(int businessId, CancellationToken ct)
+    {
+        await _businessService.DeleteAsync(User.GetUserId(), businessId, ct);
+        return NoContent();
+    }
+
+    [HttpGet("{businessId:int}/members")]
+    public async Task<ActionResult<IReadOnlyList<MemberDto>>> Members(int businessId, CancellationToken ct) =>
+        Ok(await _businessService.ListMembersAsync(User.GetUserId(), businessId, ct));
+
+    // [HttpPost("{businessId:int}/members")]
+    // public async Task<ActionResult<MemberDto>> AddMember(int businessId, AddMemberDto dto, CancellationToken ct) =>
+    //     Ok(await _businessService.AddMemberAsync(User.GetUserId(), businessId, dto, ct));
+
+    [HttpPut("{businessId:int}/members/{membershipId:int}/role")]
+    public async Task<IActionResult> ChangeRole(int businessId, int membershipId, ChangeMemberRoleDto dto, CancellationToken ct)
+    {
+        await _businessService.ChangeMemberRoleAsync(User.GetUserId(), businessId, membershipId, dto, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("{businessId:int}/members/{membershipId:int}")]
+    public async Task<IActionResult> RemoveMember(int businessId, int membershipId, CancellationToken ct)
+    {
+        await _businessService.RemoveMemberAsync(User.GetUserId(), businessId, membershipId, ct);
+        return NoContent();
     }
 }
+
 
