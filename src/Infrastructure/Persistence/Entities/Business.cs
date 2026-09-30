@@ -1,3 +1,5 @@
+using MiniCrm.Core.Enums;
+
 namespace MiniCrm.Infrastructure.Persistence.Entities;
 
 /// <summary>
@@ -11,8 +13,9 @@ public class Business
     public required string Name { get; set; }          // shown to EndClients in search — unique platform-wide
     public string? Description { get; set; }            // public profile blurb — kept minimal, expand later
     public string? Website { get; set; }
-
+    public string? Adress {get;set;}
     public bool IsActive { get; set; } = true;           // SiteAdmin can suspend without deleting
+    public BusinessDomain Domain {get;set;} = BusinessDomain.Other;
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAtUtc { get; set; }
 
@@ -21,11 +24,11 @@ public class Business
 
     public byte[] RowVersion { get; set; } = null!;
 
-    public ICollection<BusinessMembership> Memberships { get; set; } = new List<BusinessMembership>();
-    public ICollection<Company> Companies { get; set; } = new List<Company>();
-    public ICollection<Contact> Contacts { get; set; } = new List<Contact>();
-    public ICollection<Opportunity> Opportunities { get; set; } = new List<Opportunity>();
-    public ICollection<PipelineStage> PipelineStages { get; set; } = new List<PipelineStage>();
-    public ICollection<BusinessRating> RatingsReceived { get; set; } = new List<BusinessRating>();
-    public ICollection<ClientRating> ClientRatingsGiven { get; set; } = new List<ClientRating>();
+    public ICollection<BusinessMembership> Memberships { get; set; } = [];
+    public ICollection<Company> Companies { get; set; } = [];
+    public ICollection<Contact> Contacts { get; set; } = [];
+    public ICollection<Opportunity> Opportunities { get; set; } = [];
+    public ICollection<PipelineStage> PipelineStages { get; set; } = [];
+    public ICollection<BusinessRating> RatingsReceived { get; set; } = [];
+    public ICollection<ClientRating> ClientRatingsGiven { get; set; } = [];
 }

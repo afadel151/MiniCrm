@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-namespace MiniCrm.Infrastructure.Persistence.Entities;
+﻿namespace MiniCrm.Infrastructure.Persistence.Entities;
 
 public partial class AuditLog
 {
