@@ -14,7 +14,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import BusinessOwnerSidebar from "~/components/BusinessOwnerSidebar.vue";
+import BusinessOwnerSidebar from "~/components/BusinessSidebar.vue";
 </script>
 
 <template>

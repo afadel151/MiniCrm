@@ -19,17 +19,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import type { BusinessInfo, BusinessInfosResult } from "~~/shared/types/business"
+import { toast } from "vue-sonner"
+import AddBusinessDialog from "./AddBusinessDialog.vue"
+const activeBusiness = ref<BusinessInfo>()
+const businessInfos = ref<BusinessInfosResult>(null!)
+async function fetchBusinesses() {
+  try {
+    const result = await $fetch<BusinessInfosResult>("/api/backend/business", {
+      method: 'GET'
+    });
+    businessInfos.value = result
+    activeBusiness.value = result.infos.at(0);
+    return toast.success("Fetched businesses")
 
-const props = defineProps<{
-  teams: {
-    name: string
-    logo: Component
-    plan: string
-  }[]
-}>()
-
+  } catch (error) {
+    return toast.error("Error fetching businesses")
+  }
+}
 const { isMobile } = useSidebar()
-const activeTeam = ref(props.teams[0]!)
+onMounted(() => {
+  fetchBusinesses();
+})
 </script>
 
 <template>
@@ -37,52 +48,38 @@ const activeTeam = ref(props.teams[0]!)
     <SidebarMenuItem>
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <SidebarMenuButton
-            size="lg"
-            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-          >
-            <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <component :is="activeTeam.logo" class="size-4" />
+          <SidebarMenuButton size="lg"
+            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+            <div
+              class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <component :is="activeBusiness?.businessName" class="size-4" />
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">
-                {{ activeTeam.name }}
+                {{ activeBusiness?.businessName }}
               </span>
-              <span class="truncate text-xs">{{ activeTeam.plan }}</span>
+              <span class="truncate text-xs">{{ activeBusiness?.membershipCount }} members</span>
             </div>
             <ChevronsUpDown class="ml-auto" />
           </SidebarMenuButton>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-          align="start"
-          :side="isMobile ? 'bottom' : 'right'"
-          :side-offset="4"
-        >
+        <DropdownMenuContent class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg" align="start"
+          :side="isMobile ? 'bottom' : 'right'" :side-offset="4">
           <DropdownMenuLabel class="text-xs text-muted-foreground">
             Teams
           </DropdownMenuLabel>
-          <DropdownMenuItem
-            v-for="(team, index) in teams"
-            :key="team.name"
-            class="gap-2 p-2"
-            @click="activeTeam = team"
-          >
+          <DropdownMenuItem v-for="(businessInfo, index) in businessInfos.infos" :key="businessInfo.id" class="gap-2 p-2"
+            @click="activeBusiness = businessInfo">
             <div class="flex size-6 items-center justify-center rounded-sm border">
-              <component :is="team.logo" class="size-3.5 shrink-0" />
+              <!-- <component :is="businessInfo.id" class="size-3.5 shrink-0" /> -->
             </div>
-            {{ team.name }}
+            {{ businessInfo.businessName }}
             <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem class="gap-2 p-2">
-            <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
-              <Plus class="size-4" />
-            </div>
-            <div class="font-medium text-muted-foreground">
-              Add team
-            </div>
-          </DropdownMenuItem>
+          <!-- <DropdownMenuItem> -->
+            <AddBusinessDialog />
+          <!-- </DropdownMenuItem> -->
         </DropdownMenuContent>
       </DropdownMenu>
     </SidebarMenuItem>

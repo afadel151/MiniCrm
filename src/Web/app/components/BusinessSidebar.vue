@@ -4,20 +4,14 @@ import type { SidebarProps } from "@/components/ui/sidebar"
 import {
   AudioWaveform,
   BookOpen,
-  Bot,
   BuildingComplex,
   Command,
   Contact,
-  Frame,
   GalleryVerticalEnd,
   Home,
-  Map,
-  PieChart,
   Settings2,
-  SquareTerminal,
 } from "@lucide/vue"
 import NavMain from "@/components/NavMain.vue"
-import NavProjects from "@/components/NavProjects.vue"
 import NavUser from "@/components/NavUser.vue"
 import BusinessSwitcher from "@/components/BusinessSwitcher.vue"
 
@@ -86,7 +80,7 @@ const data = {
 <template>
   <Sidebar v-bind="props">
     <SidebarHeader>
-      <BusinessSwitcher :teams="data.teams" />
+      <BusinessSwitcher  />
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain" />

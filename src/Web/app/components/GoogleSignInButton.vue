@@ -14,7 +14,6 @@ const { fetch: refreshClientSession } = useUserSession()
 declare global { interface Window { google?: any } }
 
 const businessName = ref('')
-const needsBusinessName = ref(false)
 let pendingCredential: string | null = null
 let scriptPromise: Promise<void> | null = null
 
@@ -37,16 +36,14 @@ async function sendToBackend(idToken: string) {
         method: 'POST',
         body: {
             idToken,
-            role: props.role === 'business' ? "BusinessManager" : props.role === 'client' ? 'Client' : "",
-            businessName: businessName.value || "",
+            role: props.role === 'business' ? "Business" : props.role === 'client' ? 'Client' : "",
         },
     })
     const user = await $fetch<{ user: UserDto }>('/api/auth/google', {
         method: 'POST',
         body: {
             idToken,
-            role: props.role === 'business' ? "BusinessManager" : props.role === 'client' ? 'Client' : "",
-            businessName: businessName.value || "",
+            role: props.role === 'business' ? "Business" : props.role === 'client' ? 'Client' : "",
         },
     });
     console.log(2)
@@ -64,10 +61,7 @@ async function onCredentialResponse(response: any) {
         console.log(3); // 3
         console.log(err.data.data.code); // 3
 
-        if (err.data?.data.code === 'business-name-required') {
-            needsBusinessName.value = true   // stay here, show the company name form
-            return
-        }else if(err.data?.data.code === 'redirect-to-register') {
+        if(err.data?.data.code === 'redirect-to-register') {
             emit('register');
         }
         emit('error', err.data?.data.message ?? 'Google sign-in failed.')
@@ -117,12 +111,6 @@ onMounted(() => { if (buttonEl.value) renderButton(buttonEl.value) })
 </script>
 
 <template>
-    <div v-if="needsBusinessName" class="grid w-full gap-2">
-        <Label for="business-name">Nom de l'entreprise</Label>
-        <Input id="business-name" v-model="businessName" placeholder="Ma société" />
-        <Button :disabled="!businessName.trim()" @click="retryWithBusinessName">
-            Continuer
-        </Button>
-    </div>
-    <div v-else ref="buttonEl" class="flex justify-center" />
+
+    <div  ref="buttonEl" class="flex justify-center" />
 </template>
