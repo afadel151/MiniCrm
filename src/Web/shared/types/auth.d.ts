@@ -4,7 +4,7 @@ declare module '#auth-utils' {
     email: string
     firstName: string
     lastName: string
-    roles: string[]
+    role: string
     mustChangePassword: boolean
   }
 
