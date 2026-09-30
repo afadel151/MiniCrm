@@ -15,7 +15,7 @@ public class GoogleAuthService(UserManager<ApplicationUser> userManager, IConfig
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IConfiguration _configuration = configuration;
 
-    
+
     public async Task<GoogleJsonWebSignature.Payload?> ValidateAsync(string idToken)
     {
         var clientId = _configuration["Authentication:Google:ClientId"]
@@ -23,8 +23,8 @@ public class GoogleAuthService(UserManager<ApplicationUser> userManager, IConfig
 
         try
         {
-            return await GoogleJsonWebSignature.ValidateAsync(idToken,
-                new GoogleJsonWebSignature.ValidationSettings { Audience = [clientId] });
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new() { Audience = [clientId] });
+            return payload.EmailVerified ? payload : null;
         }
         catch
         {
