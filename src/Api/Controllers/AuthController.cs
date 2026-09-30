@@ -155,14 +155,6 @@ public class AuthController(IAuthService authService) : ControllerBase
         {
             return Ok(await _authService.GoogleLoginAsync(request));
         }
-        catch (GoogleBusinessNameRequiredException)
-        {
-            return Problem(
-                statusCode: StatusCodes.Status422UnprocessableEntity,
-                title: "Business name required",
-                detail: "Please provide your company name to finish creating your account.",
-                extensions: new Dictionary<string, object?> { ["code"] = "business-name-required" });
-        }
         catch (RedirectToRegisterException)
         {
             return Problem(
