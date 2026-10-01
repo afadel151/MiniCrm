@@ -1,39 +1,26 @@
-// server/api/invitations/register.post.ts
-import { z } from 'zod'
+// server/api/invitations/register.post.ts  (replaces the earlier version)
+import { registerStaffSchema } from '#shared/invitations/schemas'
+import type { LoginResponse, UserDto } from '#shared/auth/auth.dto'
 
-// Same policy as register.post.ts. Consider extracting it to a shared util.
-const passwordSchema = z
-  .string()
-  .min(8)
-  .max(128)
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one digit')
-  .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
-
-// No email field: the address comes from the invitation and cannot be chosen here.
-const bodySchema = z
-  .object({
-    token: z.string().trim().min(20).max(100),
-    firstName: z.string().trim().min(1).max(100),
-    lastName: z.string().trim().min(1).max(100),
-    password: passwordSchema,
-    confirmPassword: z.string(),
-  })
-  .refine((d) => d.password === d.confirmPassword, {
-    message: 'Passwords do not match.',
-    path: ['confirmPassword'],
-  })
+interface RegisterStaffResult {
+  businessId: number
+  businessName: string
+  role: string
+  email: string
+}
 
 export default defineEventHandler(async (event) => {
-  const body = await readValidatedBody(event, bodySchema.parse)
+  const body = await readValidatedBody(event, registerStaffSchema.parse)
   const { apiBaseUrl } = useRuntimeConfig(event)
   setHeader(event, 'Cache-Control', 'no-store')
 
+  // 1. Create the account and the membership. Anything that fails here is the caller's to see.
+  let joined: RegisterStaffResult
   try {
-    // Returns { businessId, businessName, role, alreadyMember }. No session is created here:
-    // the page should call the existing /api/auth/login with the same credentials afterwards.
-    return await $fetch(`${apiBaseUrl}/api/invitations/register`, { method: 'POST', body })
+    joined = await $fetch<RegisterStaffResult>(`${apiBaseUrl}/api/invitations/register`, {
+      method: 'POST',
+      body, // includes token + confirmPassword, which the API validates again
+    })
   } catch (err: any) {
     const status: number = err?.response?.status ?? err?.statusCode ?? 502
     let message = 'Registration failed.'
@@ -44,5 +31,43 @@ export default defineEventHandler(async (event) => {
       message = 'Service indisponible, réessayez dans un instant.'
     }
     throw createError({ statusCode: status, message, data: { message } })
+  }
+
+  // 2. Sign in the same way login.post.ts does. The email never leaves the server.
+  try {
+    const auth = await $fetch<LoginResponse>(`${apiBaseUrl}/api/auth/login`, {
+      method: 'POST',
+      body: { email: joined.email, password: body.password },
+    })
+    const profile = await $fetch<UserDto>(`${apiBaseUrl}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${auth.accessToken}` },
+    })
+
+    await setUserSession(
+      event,
+      {
+        user: {
+          id: profile.id,
+          email: profile.email,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          role: profile.role,
+          mustChangePassword: profile.mustChangePassword,
+        },
+        secure: {
+          jwt: auth.accessToken,
+          refreshToken: auth.refreshToken,
+          expiresAt: Date.now() + auth.expiresIn * 1000,
+        },
+        loggedInAt: Date.now(),
+      },
+      { maxAge: SESSION_MAX_AGE }, // auto-imported from your server utils, as in login.post.ts
+    )
+
+    return { signedIn: true, businessId: joined.businessId, businessName: joined.businessName, role: joined.role }
+  } catch (err) {
+    // The account and membership exist. Do not report a failure: send the person to the sign-in form.
+    console.error('[invitation-register] account created but sign-in failed', err)
+    return { signedIn: false, businessId: joined.businessId, businessName: joined.businessName, role: joined.role }
   }
 })
