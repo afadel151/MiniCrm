@@ -25,7 +25,7 @@ async function logout() {
           <Button variant="ghost" as-child class="hidden sm:inline-flex">
             <NuxtLink to="/auth/login"> Se connecter </NuxtLink>
           </Button> <Button as-child>
-            <NuxtLink to="/auth/register"> Commencer </NuxtLink>
+            <NuxtLink to="/auth/register"> Creee un compte </NuxtLink>
           </Button>
         </div>
         <div class="flex items-center gap-2" v-else>
