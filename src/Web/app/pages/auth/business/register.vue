@@ -22,7 +22,7 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Check, Circle, Dot } from '@lucide/vue'
 
-definePageMeta({ layout: 'guest' })
+definePageMeta({ layout: 'guest' ,public: true})
 
 const PASSWORD_RULE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/
 
@@ -166,7 +166,7 @@ function canGoTo(step: number) {
                   <Label for="firstName">Prénom</Label>
                   <Input id="firstName" v-model="form.firstName" autocomplete="given-name" maxlength="100" required />
                 </div>
-                <div class="grid gap-2">
+                <div class="grid gap-2">number
                   <Label for="lastName">Nom</Label>
                   <Input id="lastName" v-model="form.lastName" autocomplete="family-name" maxlength="100" required />
                 </div>
@@ -198,6 +198,7 @@ function canGoTo(step: number) {
             </template>
 
             <!-- Step 3: business -->
+             <!-- TODO: remove businessName and phone number from the form -->
             <template v-else>
               <div class="grid gap-2">
                 <Label for="businessName">Nom de l’entreprise</Label>

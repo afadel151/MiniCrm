@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '~/components/ui/card'
 
-definePageMeta({ layout: 'guest' })
+definePageMeta({ layout: 'guest',public: true })
 
 const roles = [
   {

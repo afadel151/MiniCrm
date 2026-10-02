@@ -14,7 +14,7 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import GoogleSignInButton from '~/components/GoogleSignInButton.vue'
 
-definePageMeta({ layout: 'guest' })
+definePageMeta({ layout: 'guest',public: true })
 
 const form = reactive<RegisterUserRequest>({
   firstName: '',

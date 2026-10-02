@@ -14,6 +14,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 definePageMeta({
   layout: "guest",
+  public: true
+})
+onMounted(()=>{
+  refreshClientSession()
 })
 </script>
 
@@ -49,7 +53,7 @@ definePageMeta({
           </div>
           <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row" v-else>
             <Button size="lg" class="h-11 px-6 shadow-lg shadow-primary/20" as-child>
-              <NuxtLink to="/dashboard">
+              <NuxtLink :to="user?.role == 'Business' ? '/business/dashboard' : user?.role == 'Admin' ? '/admin/dashboard' : '/client/dashboard'">
                 Dashboard
                 <span class="ml-2">→</span>
               </NuxtLink>

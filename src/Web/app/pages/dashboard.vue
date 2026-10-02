@@ -31,7 +31,7 @@ const { user} = useUserSession()
                 <dt class="text-muted-foreground">E-mail</dt>
                 <dd class="font-medium break-all">{{ user?.email }}</dd>
                 <dt class="text-muted-foreground">Rôles</dt>
-                <dd class="font-medium">{{ user?.roles }}</dd>
+                <dd class="font-medium">{{ user?.role }}</dd>
             </dl>
         </CardContent>
     </Card>

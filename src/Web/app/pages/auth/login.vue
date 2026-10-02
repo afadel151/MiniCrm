@@ -13,7 +13,7 @@ import {
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 
-definePageMeta({ layout: 'guest' })
+definePageMeta({ layout: 'guest',public: true })
 const props = defineProps<{ invitation_link?: string }>()
 
 
