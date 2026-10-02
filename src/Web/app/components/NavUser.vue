@@ -2,9 +2,18 @@
 import { Button } from '~/components/ui/button'
 const { loggedIn, user, session, fetch: refreshClientSession, clear, openInPopup } = useUserSession()
 async function logout() {
-  await $fetch('/api/auth/logout', { method: 'POST' })
-  await refreshClientSession() // the cookie is gone, so this makes loggedIn false on the client
-  await navigateTo('/auth/login')
+  try {
+    const result = await $fetch('/api/auth/logout', { method: 'POST' })
+    await refreshClientSession()
+    await navigateTo('/auth/login')
+  } catch (err) {
+    toast.error(
+      errorMessage(
+        err,
+        'Unable logout.',
+      ),
+    )
+  }
 }
 
 import {
@@ -36,6 +45,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { toast } from 'vue-sonner'
 
 const { isMobile } = useSidebar()
 </script>
@@ -54,7 +64,7 @@ const { isMobile } = useSidebar()
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ user?.firstName }} {{ user?.lastName }}</span>
+              <span class="truncate font-medium">{{ user?.firstName }}</span>
               <span class="truncate text-xs">{{ user?.email }}</span>
             </div>
             <ChevronsUpDown class="ml-auto size-4" />
@@ -96,12 +106,11 @@ const { isMobile } = useSidebar()
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Button size="sm" variant="ghost"  @click="logout">
-              <LogOut />
-              Logout
-            </Button>
-          </DropdownMenuItem>
+          <Button class="w-full flex justify-start" variant="ghost" @click="logout">
+            <LogOut />
+            Logout
+          </Button>
+
         </DropdownMenuContent>
       </DropdownMenu>
     </SidebarMenuItem>

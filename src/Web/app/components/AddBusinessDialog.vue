@@ -20,7 +20,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-
+import { toast } from 'vue-sonner'
+const emit = defineEmits<{
+    (e: 'success', business: BusinessInfo): void
+}>();
 
 const form = ref<CreateBusinessDto>({
     businessName: '',
@@ -36,21 +39,44 @@ const formatDomain = (domain: string) => {
     return domain.replace(/([A-Z])/g, ' $1').trim()
 }
 
-async function logForm() {
-    console.log(form.value);
+async function createBusiness() {
+    try {
+        const business = await $fetch<BusinessInfo>("/api/backend/business", {
+            method: 'POST',
+            body: form.value
+        });
+        if (!business) {
+            toast.error("Business was created but no data was returned.")
+            return
+        }
+
+        addBusinessOpen.value = false
+        emit("success", business)
+
+        toast.success(`${business.businessName} created successfully`)
+    } catch (err) {
+        toast.error(
+            errorMessage(
+                err,
+                'Unable to create the business. Please try again.',
+            ),
+        )
+    }
 }
+const addBusinessOpen = ref(false)
+
 </script>
 
 <template>
-    <Dialog>
+    <Dialog v-model:open="addBusinessOpen">
         <DialogTrigger as-child>
-            <Button variant="outline" class="w-full">
+            <Button variant="ghost" class="w-full">
                 <Plus />
-                Add team
+                create a new business
             </Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-106.25">
-            <form @submit.prevent="logForm">
+            <form @submit.prevent="createBusiness">
 
                 <DialogHeader>
                     <DialogTitle>Create a new Business</DialogTitle>
@@ -59,7 +85,7 @@ async function logForm() {
                     </DialogDescription>
                 </DialogHeader>
 
-                <div class="grid gap-4">
+                <div class="grid gap-4 mt-5">
                     <!-- Business Name -->
                     <div class="grid gap-3">
                         <Label for="business-name">Name</Label>
@@ -103,14 +129,13 @@ async function logForm() {
                     </div>
                 </div>
 
-                <DialogFooter>
+                <DialogFooter class="mt-5">
                     <DialogClose as-child>
                         <Button variant="outline" type="button">
                             Cancel
                         </Button>
                     </DialogClose>
-
-                    <Button type="submit" >
+                    <Button type="submit">
                         Create Business
                     </Button>
                 </DialogFooter>

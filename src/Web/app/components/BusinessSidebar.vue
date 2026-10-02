@@ -49,12 +49,12 @@ const data = {
   navMain: [
      {
       title: "Dashboard",
-      url: "#",
+      url: "/business/dashboard",
       icon: Home,
     },
     {
-      title: "Companies",
-      url: "#",
+      title: "Client",
+      url: "/client/dashboard",
       icon: BuildingComplex,
     },
     {

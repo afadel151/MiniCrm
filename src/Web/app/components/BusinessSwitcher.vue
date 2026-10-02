@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { Component } from "vue"
 
-import { ChevronsUpDown, Plus } from "@lucide/vue"
-import { ref } from "vue"
+import { ChevronsUpDown, Plus, Building2 } from "@lucide/vue"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,25 +20,21 @@ import {
 import type { BusinessInfo, BusinessInfosResult } from "~~/shared/types/business"
 import { toast } from "vue-sonner"
 import AddBusinessDialog from "./AddBusinessDialog.vue"
-const activeBusiness = ref<BusinessInfo>()
-const businessInfos = ref<BusinessInfosResult>(null!)
-async function fetchBusinesses() {
-  try {
-    const result = await $fetch<BusinessInfosResult>("/api/backend/business", {
-      method: 'GET'
-    });
-    businessInfos.value = result
-    activeBusiness.value = result.infos.at(0);
-    return toast.success("Fetched businesses")
+const {
+  businesses,
+  activeBusiness,
+  initialize,
+  selectBusiness,
+  addBusiness
+} = useWorkspace()
 
-  } catch (error) {
-    return toast.error("Error fetching businesses")
-  }
-}
-const { isMobile } = useSidebar()
 onMounted(() => {
-  fetchBusinesses();
+  initialize()
 })
+const { isMobile } = useSidebar();
+function createdBusiness(infos: BusinessInfo) {
+  addBusiness(infos);
+}
 </script>
 
 <template>
@@ -52,7 +46,7 @@ onMounted(() => {
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
             <div
               class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <component :is="activeBusiness?.businessName" class="size-4" />
+              <Building2 class="size-4" />
             </div>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">
@@ -68,17 +62,17 @@ onMounted(() => {
           <DropdownMenuLabel class="text-xs text-muted-foreground">
             Teams
           </DropdownMenuLabel>
-          <DropdownMenuItem v-for="(businessInfo, index) in businessInfos.infos" :key="businessInfo.id" class="gap-2 p-2"
-            @click="activeBusiness = businessInfo">
+          <DropdownMenuItem v-for="(business, index) in businesses" :key="business.id" class="gap-2 p-2"
+            @click="selectBusiness(business.id)">
             <div class="flex size-6 items-center justify-center rounded-sm border">
               <!-- <component :is="businessInfo.id" class="size-3.5 shrink-0" /> -->
             </div>
-            {{ businessInfo.businessName }}
+            {{ business.businessName }}
             <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <!-- <DropdownMenuItem> -->
-            <AddBusinessDialog />
+          <AddBusinessDialog @success="createdBusiness" />
           <!-- </DropdownMenuItem> -->
         </DropdownMenuContent>
       </DropdownMenu>
