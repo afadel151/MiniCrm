@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using MiniCrm.Application.DTO;
 using MiniCrm.Application.Helpers;
 using MiniCrm.Core.Enums;
+using MiniCrm.Core.Exceptions;
 using MiniCrm.Core.Services;
 using MiniCrm.Infrastructure.Identity;
 using MiniCrm.Infrastructure.Persistence;
@@ -77,7 +78,6 @@ public sealed class InvitationService(
 {
     private readonly InvitationOptions _opt = options.Value;
 
-    // ---------- helpers ----------
 
     private static string NewToken() =>
         Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
@@ -130,11 +130,13 @@ public sealed class InvitationService(
 
     public async Task<InvitationCreatedDto> CreateAsync(Guid userId, int businessId, CreateInvitationDto dto, CancellationToken ct)
     {
+        logger.LogInformation("Dto: {Dto}",dto);
         var actor = await access.RequireAsync(userId, businessId, true, ct);
         if (!Enum.IsDefined(dto.Role)) throw new ValidationDomainException("Invalid role.");
+        Console.WriteLine("role"+ InvitationPerms.CanInvite(actor, dto.Role));
         if (!InvitationPerms.CanInvite(actor, dto.Role)) throw new ForbiddenDomainException("Your role cannot invite that role.");
 
-        var email = Text.Email(dto.Email) ?? throw new ValidationDomainException("Email is required.");
+        var email = TextHelper.Email(dto.Email) ?? throw new ValidationDomainException("Email is required.");
         var normalized = Normalize(email);
 
         // Only reveals what the inviter already sees in the team list. Whether an account exists is never disclosed here.
@@ -194,7 +196,7 @@ public sealed class InvitationService(
                 await tx.CommitAsync(ct);
             });
         }
-        catch (DbUpdateException ex) when (Text.IsUniqueViolation(ex))
+        catch (DbUpdateException ex) when (TextHelper.IsUniqueViolation(ex))
         {
             throw new ConflictDomainException("An invitation for this email is being created right now. Try again.");
         }
@@ -315,8 +317,8 @@ public sealed class InvitationService(
         {
             UserName = inv.Email,
             Email = inv.Email,                       // from the invitation, never from the caller
-            FirstName = Text.Required(request.FirstName, "First name", 1, 100),
-            LastName = Text.Required(request.LastName, "Last name", 1, 100),
+            FirstName = TextHelper.Required(request.FirstName, "First name", 1, 100),
+            LastName = TextHelper.Required(request.LastName, "Last name", 1, 100),
             EmailConfirmed = true,                   // the emailed token proves mailbox control
             IsActive = true,
             MustChangePassword = false,              // they just chose this password
@@ -411,7 +413,7 @@ public sealed class InvitationService(
                 return new AcceptInvitationResult(inv.BusinessId, inv.Business.Name, m.Role, already);
             });
         }
-        catch (DbUpdateException ex) when (Text.IsUniqueViolation(ex))
+        catch (DbUpdateException ex) when (TextHelper.IsUniqueViolation(ex))
         {
             // Two invitations to the same business accepted at the same instant. The transaction rolled back, nothing was consumed.
             throw new ConflictDomainException("Another request is joining you to this business. Reload and check.");

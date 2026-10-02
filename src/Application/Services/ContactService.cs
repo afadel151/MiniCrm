@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using MiniCrm.Application.DTO;
+using MiniCrm.Application.Helpers;
+using MiniCrm.Core.Exceptions;
 using MiniCrm.Infrastructure.Persistence;
 using MiniCrm.Infrastructure.Persistence.Entities;
 
@@ -107,7 +109,7 @@ public sealed class ContactService(AppDbContext db, BusinessAccess access) : ICo
     public async Task DeleteAsync(Guid userId, int businessId, int contactId, CancellationToken ct)
     {
         var m = await access.RequireAsync(userId, businessId, true, ct);
-        if (!Perms.CanDeleteContact(m.Role)) throw new ForbiddenDomainException("Only owners and managers can delete contacts.");
+        if (!PermsHelper.CanDeleteContact(m.Role)) throw new ForbiddenDomainException("Only owners and managers can delete contacts.");
 
         var c = await Scope(businessId).FirstOrDefaultAsync(x => x.Id == contactId, ct)
             ?? throw new NotFoundDomainException("Contact");
@@ -122,14 +124,14 @@ public sealed class ContactService(AppDbContext db, BusinessAccess access) : ICo
 
     private async Task ApplyAsync(Contact c, SaveContactDto i, int businessId, CancellationToken ct)
     {
-        c.FirstName = Text.Required(i.FirstName, "First name", 1, 100);
-        c.LastName = Text.Required(i.LastName, "Last name", 1, 100);
-        c.Email = Text.Email(i.Email);
-        c.Phone = Text.Optional(i.Phone, "Phone", 30);
-        c.AddressLine = Text.Optional(i.AddressLine, "Address", 200);
-        c.City = Text.Optional(i.City, "City", 100);
-        c.PostalCode = Text.Optional(i.PostalCode, "Postal code", 20);
-        c.Country = Text.Optional(i.Country, "Country", 100);
+        c.FirstName = TextHelper.Required(i.FirstName, "First name", 1, 100);
+        c.LastName = TextHelper.Required(i.LastName, "Last name", 1, 100);
+        c.Email = TextHelper.Email(i.Email);
+        c.Phone = TextHelper.Optional(i.Phone, "Phone", 30);
+        c.AddressLine = TextHelper.Optional(i.AddressLine, "Address", 200);
+        c.City = TextHelper.Optional(i.City, "City", 100);
+        c.PostalCode = TextHelper.Optional(i.PostalCode, "Postal code", 20);
+        c.Country = TextHelper.Optional(i.Country, "Country", 100);
 
         if (!Enum.IsDefined(i.ContactType) || !Enum.IsDefined(i.ContactSource))
             throw new ValidationDomainException("Invalid contact type or source.");

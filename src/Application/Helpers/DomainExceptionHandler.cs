@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MiniCrm.Application.Services;
+using MiniCrm.Core.Exceptions;
 
 namespace MiniCrm.Application.Helpers;
 public sealed class DomainExceptionHandler(IProblemDetailsService problems) : IExceptionHandler

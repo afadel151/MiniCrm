@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using MiniCrm.Application.DTO;
+using MiniCrm.Application.Helpers;
 using MiniCrm.Core.Enums;
+using MiniCrm.Core.Exceptions;
 using MiniCrm.Infrastructure.Identity;
 using MiniCrm.Infrastructure.Persistence;
 using MiniCrm.Infrastructure.Persistence.Entities;
@@ -85,7 +87,7 @@ public sealed class DirectoryService(AppDbContext db) : IDirectoryService
     public async Task<RatingView> RateAsync(Guid clientId, int businessId, RatingDto dto, CancellationToken ct)
     {
         if (dto.Stars is < 1 or > 5) throw new ValidationDomainException("Stars must be between 1 and 5.");
-        var comment = Text.Optional(dto.Comment, "Comment", 1000);
+        var comment = TextHelper.Optional(dto.Comment, "Comment", 1000);
 
         if (!await Visible().AnyAsync(b => b.Id == businessId, ct)) throw new NotFoundDomainException("Business");
 
@@ -112,7 +114,7 @@ public sealed class DirectoryService(AppDbContext db) : IDirectoryService
         {
             await db.SaveChangesAsync(ct);
         }
-        catch (DbUpdateException ex) when (Text.IsUniqueViolation(ex))
+        catch (DbUpdateException ex) when (TextHelper.IsUniqueViolation(ex))
         {
             throw new ConflictDomainException("Your rating was being saved twice. Try again.");
         }

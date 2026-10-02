@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MiniCrm.Application.DTO;
+using MiniCrm.Application.Helpers;
 using MiniCrm.Core.Enums;
+using MiniCrm.Core.Exceptions;
 using MiniCrm.Infrastructure.Identity;
 using MiniCrm.Infrastructure.Persistence;
 using MiniCrm.Infrastructure.Persistence.Entities;
@@ -11,7 +14,7 @@ namespace MiniCrm.Application.Services;
 public interface IBusinessService
 {
     Task<BusinessInfosResult> ListMineAsync(Guid userId, CancellationToken ct);
-    Task<BusinessDetail> CreateAsync(Guid userId, CreateBusinessDto dto, CancellationToken ct);
+    Task<BusinessInfo> CreateAsync(Guid userId, CreateBusinessDto dto, CancellationToken ct);
     Task<BusinessDetail> GetAsync(Guid userId, int businessId, CancellationToken ct);
     Task<BusinessDetail> UpdateAsync(Guid userId, int businessId, UpdateBusinessDto dto, CancellationToken ct);
     Task DeleteAsync(Guid userId, int businessId, CancellationToken ct);
@@ -21,7 +24,7 @@ public interface IBusinessService
     Task RemoveMemberAsync(Guid userId, int businessId, int membershipId, CancellationToken ct);
 }
 
-public sealed class BusinessService(AppDbContext db, BusinessAccess access) : IBusinessService
+public sealed class BusinessService(AppDbContext db, BusinessAccess access,ILogger<BusinessService> logger) : IBusinessService
 {
     private const int MaxOwnedBusinesses = 5; // stops directory spam from one account
     private const string BusinessRole = "Business";
@@ -30,6 +33,10 @@ public sealed class BusinessService(AppDbContext db, BusinessAccess access) : IB
         b.Id, b.Name, b.Description, b.Website, b.Adress, b.Domain, b.IsActive,
         count, m.Role, m.IsPrimaryOwner, b.RowVersion);
 
+    private static BusinessInfo ToInfo(Business b,BusinessMembership m,int count)
+    {
+        return new BusinessInfo(b.Id,b.Name,b.IsActive,count,new MembershipInfo(m.Id,m.Role,m.IsActive));
+    }
     public async Task<BusinessInfosResult> ListMineAsync(Guid userId, CancellationToken ct)
     {
         var infos = await db.Set<BusinessMembership>().AsNoTracking()
@@ -46,22 +53,23 @@ public sealed class BusinessService(AppDbContext db, BusinessAccess access) : IB
         return new BusinessInfosResult(infos);
     }
 
-    public async Task<BusinessDetail> CreateAsync(Guid userId, CreateBusinessDto dto, CancellationToken ct)
+    public async Task<BusinessInfo> CreateAsync(Guid userId, CreateBusinessDto dto, CancellationToken ct)
     {
-        var name = Text.Required(dto.BusinessName, "Name", 2, 150);
-        var description = Text.Optional(dto.Description, "Description", 2000);
-        var address = Text.Optional(dto.BusinessAdress, "Address", 300);
-        var website = Text.Website(dto.Website);
-        if (!Enum.IsDefined(dto.BusinessDomain)) throw new ValidationDomainException("Invalid business domain.");
+        var name = TextHelper.Required(dto.BusinessName, "Name", 2, 150);
+        var description = TextHelper.Optional(dto.Description, "Description", 2000);
+        var website = TextHelper.Website(dto.Website); // throws 400
+        var address = TextHelper.Optional(dto.BusinessAdress, "Address", 300);
+        logger.LogInformation("Website: {W},address: {A}",website,address);
+        if (!Enum.IsDefined(dto.BusinessDomain)) throw new ValidationDomainException("Invalid business domain.");// 400
 
         var owned = await db.Set<BusinessMembership>()
             .CountAsync(m => m.UserId == userId && m.IsPrimaryOwner && m.IsActive && !m.Business.IsDeleted, ct);
         if (owned >= MaxOwnedBusinesses)
-            throw new ConflictDomainException($"You can own at most {MaxOwnedBusinesses} businesses.");
+            throw new ConflictDomainException($"You can own at most {MaxOwnedBusinesses} businesses."); //409
 
         // Friendly message. The filtered unique index is what actually guarantees it.
         if (await db.Set<Business>().AnyAsync(b => !b.IsDeleted && b.Name == name, ct))
-            throw new ConflictDomainException("A business with this name already exists.");
+            throw new ConflictDomainException("A business with this name already exists."); //409
 
         var now = DateTime.UtcNow;
         var business = new Business
@@ -88,12 +96,12 @@ public sealed class BusinessService(AppDbContext db, BusinessAccess access) : IB
         {
             await db.SaveChangesAsync(ct); // business + owner membership in one transaction
         }
-        catch (DbUpdateException ex) when (Text.IsUniqueViolation(ex))
+        catch (DbUpdateException ex) when (TextHelper.IsUniqueViolation(ex))
         {
             throw new ConflictDomainException("A business with this name already exists.");
         }
 
-        return ToDetail(business, membership, 1);
+        return ToInfo(business, membership, 1);
     }
 
     public async Task<BusinessDetail> GetAsync(Guid userId, int businessId, CancellationToken ct)
@@ -106,21 +114,21 @@ public sealed class BusinessService(AppDbContext db, BusinessAccess access) : IB
     public async Task<BusinessDetail> UpdateAsync(Guid userId, int businessId, UpdateBusinessDto dto, CancellationToken ct)
     {
         var m = await access.RequireAsync(userId, businessId, true, ct);
-        if (!Perms.CanEditBusiness(m.Role)) throw new ForbiddenDomainException();
+        if (!PermsHelper.CanEditBusiness(m.Role)) throw new ForbiddenDomainException();
         if (dto.RowVersion is not { Length: > 0 }) throw new ValidationDomainException("RowVersion is required.");
         if (!Enum.IsDefined(dto.BusinessDomain)) throw new ValidationDomainException("Invalid business domain.");
 
         var b = m.Business;
-        var name = Text.Required(dto.BusinessName, "Name", 2, 150);
+        var name = TextHelper.Required(dto.BusinessName, "Name", 2, 150);
 
         if (!string.Equals(name, b.Name, StringComparison.OrdinalIgnoreCase) &&
             await db.Set<Business>().AnyAsync(x => !x.IsDeleted && x.Id != b.Id && x.Name == name, ct))
             throw new ConflictDomainException("A business with this name already exists.");
 
         b.Name = name;
-        b.Description = Text.Optional(dto.Description, "Description", 2000);
-        b.Adress = Text.Optional(dto.BusinessAdress, "Address", 300);
-        b.Website = Text.Website(dto.Website);
+        b.Description = TextHelper.Optional(dto.Description, "Description", 2000);
+        b.Adress = TextHelper.Optional(dto.BusinessAdress, "Address", 300);
+        b.Website = TextHelper.Website(dto.Website);
         b.Domain = dto.BusinessDomain;
         b.UpdatedAtUtc = DateTime.UtcNow;
         db.Entry(b).Property(x => x.RowVersion).OriginalValue = dto.RowVersion;
@@ -133,7 +141,7 @@ public sealed class BusinessService(AppDbContext db, BusinessAccess access) : IB
         {
             throw new ConflictDomainException("This business was changed by someone else. Reload and try again.");
         }
-        catch (DbUpdateException ex) when (Text.IsUniqueViolation(ex))
+        catch (DbUpdateException ex) when (TextHelper.IsUniqueViolation(ex))
         {
             throw new ConflictDomainException("A business with this name already exists.");
         }
@@ -171,7 +179,7 @@ public sealed class BusinessService(AppDbContext db, BusinessAccess access) : IB
     // {
     //     var actor = await access.RequireAsync(userId, businessId, true, ct);
     //     if (!Enum.IsDefined(dto.Role)) throw new ValidationDomainException("Invalid role.");
-    //     if (!Perms.CanManage(actor.Role, dto.Role)) throw new ForbiddenDomainException("Your role cannot add members with that role.");
+    //     if (!PermsHelper.CanManage(actor.Role, dto.Role)) throw new ForbiddenDomainException("Your role cannot add members with that role.");
 
     //     var email = Text.Email(dto.Email) ?? throw new ValidationDomainException("Email is required.");
     //     var target = await users.FindByEmailAsync(email);
@@ -250,7 +258,7 @@ public sealed class BusinessService(AppDbContext db, BusinessAccess access) : IB
             throw new ForbiddenDomainException("The primary owner cannot be removed. Delete the business instead.");
 
         var isSelf = target.UserId == userId; // anyone may leave
-        if (!isSelf && !actor.IsPrimaryOwner && !Perms.CanManage(actor.Role, target.Role)) throw new ForbiddenDomainException();
+        if (!isSelf && !actor.IsPrimaryOwner && !PermsHelper.CanManage(actor.Role, target.Role)) throw new ForbiddenDomainException();
 
         target.IsActive = false; // deactivate, never delete: contacts and history reference this user
         await db.SaveChangesAsync(ct);
