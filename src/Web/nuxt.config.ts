@@ -14,6 +14,7 @@ export default defineNuxtConfig({
         sameSite: "strict",
         secure: true,
       },
+      password: process.env.NUXT_SESSION_PASSWORD
     },
   },
   css: ["~/assets/css/tailwind.css"],
