@@ -11,8 +11,8 @@ namespace MiniCrm.Api.Controllers.Business;
 
 [Route("api/[controller]")]
 [ApiController]
-// [Authorize(Roles = AppRoles.Business)]
-public class BusinessController(IBusinessService businessService) : ControllerBase
+[Authorize(Roles = AppRoles.Business)]
+public class BusinessController(IBusinessService businessService,ILogger<BusinessController> logger) : ControllerBase
 {
     private readonly IBusinessService _businessService = businessService;
 
@@ -21,8 +21,9 @@ public class BusinessController(IBusinessService businessService) : ControllerBa
             Ok(await _businessService.ListMineAsync(User.GetUserId(), ct));
 
     [HttpPost]
-    public async Task<ActionResult<BusinessDetail>> Create(CreateBusinessDto dto, CancellationToken ct)
+    public async Task<ActionResult<BusinessInfo>> Create(CreateBusinessDto dto, CancellationToken ct)
     {
+        logger.LogInformation("dto : {D}",dto);
         var r = await _businessService.CreateAsync(User.GetUserId(), dto, ct);
         return CreatedAtAction(nameof(Get), new { businessId = r.Id }, r);
     }

@@ -6,6 +6,7 @@ using MiniCrm.Application.DTO;
 using MiniCrm.Application.Services;
 using MiniCrm.Core.Constants;
 using MiniCrm.Core.Exceptions;
+using MiniCrm.Infrastructure.Identity;
 namespace MiniCrm.Api.Controllers;
 
 [Route("api/[controller]")]
@@ -120,7 +121,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
     //TODO: /api/auth/me
     [HttpGet("me")]
-    [Authorize]
+    [Authorize(Roles = AppRoles.Business)]
     public async Task<ActionResult<UserDto>> Me()
     {
         var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");

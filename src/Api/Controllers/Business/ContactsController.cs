@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using MiniCrm.Application.DTO;
 using MiniCrm.Application.Helpers;
 using MiniCrm.Application.Services;
+using MiniCrm.Infrastructure.Identity;
 namespace MiniCrm.Api.Controllers.Business;
 
 [ApiController]
-[Route("api/businesses/{businessId:int}/contacts")]
-[Authorize(Roles = "Business")]
+[Route("api/business/{businessId:int}/contacts")]
+[Authorize(Roles = AppRoles.Business)]
 public class ContactsController(IContactService svc) : ControllerBase
 {
     [HttpGet]

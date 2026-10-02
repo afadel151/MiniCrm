@@ -3,21 +3,23 @@ using Microsoft.AspNetCore.Mvc;
 using MiniCrm.Application.DTO;
 using MiniCrm.Application.Helpers;
 using MiniCrm.Application.Services;
+using MiniCrm.Infrastructure.Identity;
 
 namespace MiniCrm.Api.Controllers.Business; // same namespace as your other controllers
 
-// ---------- Staff side: only Manager-level members of that business ----------
 
 [ApiController]
-[Route("api/businesses/{businessId:int}/invitations")]
-[Authorize(Roles = "Business")]
-public class BusinessInvitationsController(IInvitationService svc) : ControllerBase
+[Route("api/business/{businessId:int}/invitations")]
+[Authorize(Roles = AppRoles.Business)]
+public class BusinessInvitationsController(IInvitationService svc,ILogger<BusinessInvitationsController> logger) : ControllerBase
 {
-    // Also the "resend" action: inviting the same email again replaces the previous pending link.
     [HttpPost]
-    public async Task<ActionResult<InvitationCreatedDto>> Create(int businessId, CreateInvitationDto dto, CancellationToken ct) =>
-        Ok(await svc.CreateAsync(User.GetUserId(), businessId, dto, ct));
+    public async Task<ActionResult<InvitationCreatedDto>> Create(int businessId, CreateInvitationDto dto, CancellationToken ct)
+    {
+        logger.LogInformation("dto : {R}",dto);
+        return Ok(await svc.CreateAsync(User.GetUserId(), businessId, dto, ct));
 
+    }
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<InvitationListItemDto>>> List(int businessId, CancellationToken ct) =>
         Ok(await svc.ListAsync(User.GetUserId(), businessId, ct));
