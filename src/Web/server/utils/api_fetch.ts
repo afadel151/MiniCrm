@@ -47,12 +47,15 @@ async function refreshSession(event: H3Event): Promise<string> {
   const { secure } = await getUserSession(event);
 
   let tokens: LoginResponse | undefined;
+
   if (secure?.refreshToken) {
     try {
       tokens = await refreshTokens(secure.refreshToken);
     } catch (err: any) {
       const status = err?.response?.status;
-      // Only a definitive rejection ends the session; a network error or 5xx keeps the user logged in.
+
+      // Only a definitive rejection ends the session;
+      // a network error or 5xx keeps the user logged in.
       if (status !== 400 && status !== 401 && status !== 403) {
         throw fail(503, "Service indisponible, réessayez dans un instant.");
       }
@@ -75,23 +78,33 @@ async function refreshSession(event: H3Event): Promise<string> {
     },
     { maxAge: SESSION_MAX_AGE },
   );
+
   return tokens.accessToken;
 }
-
 function toH3Error(err: any) {
-  if (isError(err)) return err;
+  if (isError(err)) {
+    return err;
+  }
 
-  const status: number | undefined = err?.response?.status;
-  if (!status) return fail(503, "Impossible de joindre le serveur.");
+  const status = err?.response?.status;
 
-  const problem = err?.data; // ProblemDetails
-  // Never pass 5xx details through: the API can put exception messages in them.
-  if (status >= 500) return fail(status, "Erreur du serveur distant.");
-  return fail(
-    status,
-    problem?.detail ?? problem?.title ?? "La requête a échoué.",
-    problem?.errors,
-  );
+  if (!status) {
+    return fail(503, "Impossible de joindre le serveur.");
+  }
+
+  const problem = err?.data ?? err?.response?._data;
+
+  if (status >= 500) {
+    return fail(status, "Une erreur interne est survenue.");
+  }
+
+  const message =
+    problem?.detail ??
+    problem?.message ??
+    problem?.title ??
+    "La requête a échoué.";
+
+  return fail(status, message, problem?.errors);
 }
 
 /** Calls the ASP.NET API as the signed-in user. Returns the status and the parsed body. */
