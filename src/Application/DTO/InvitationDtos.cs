@@ -4,12 +4,19 @@ using MiniCrm.Infrastructure.Persistence.Entities;
 
 namespace MiniCrm.Application.DTO;
 
-public enum InviteeAccountState { NoAccount, BusinessAccount, ClientAccount, OtherAccount }
 
-public sealed record CreateInvitationDto(string Email, BusinessMemberRole Role);
+public sealed record CreateInvitationDto(
+    string Email,
+    BusinessMemberRole Role
+);
 
 // No link here on purpose: the link only ever travels by email.
-public sealed record InvitationCreatedDto(int Id, string Email, BusinessMemberRole Role, DateTime ExpiresAtUtc, bool EmailSent);
+public sealed record InvitationCreatedDto(
+    int Id,
+    string Email,
+    BusinessMemberRole Role,
+    DateTime ExpiresAtUtc,
+    bool EmailSent);
 
 public sealed record InvitationListItemDto(
     int Id,
@@ -30,7 +37,11 @@ public sealed record InvitationPreviewDto(
     InviteeAccountState AccountState,
     DateTime ExpiresAtUtc);
 
-public sealed record AcceptInvitationResult(int BusinessId, string BusinessName, BusinessMemberRole Role, bool AlreadyMember);
+public sealed record AcceptInvitationResult(
+    int BusinessId,
+    string BusinessName,
+    BusinessMemberRole Role, 
+    bool AlreadyMember);
 
 public sealed record InvitationTokenRequest
 {

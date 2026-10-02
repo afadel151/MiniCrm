@@ -20,7 +20,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<BusinessAccess>();
         services.AddScoped<IDirectoryService, DirectoryService>();
         services.AddScoped<IContactService, ContactService>();
-
+        services.AddScoped<IInvitationEmailSender, DevLogInvitationEmailSender>();
         services.AddScoped<IInvitationService, InvitationService>();
 
         services.AddScoped<IRoleHelper, RoleHelper>();
