@@ -10,6 +10,7 @@ using MiniCrm.Core;
 using MiniCrm.Infrastructure;
 using MiniCrm.Infrastructure.Identity;
 using Serilog;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +44,8 @@ builder.Services.AddCore();                                  // Registers Option
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(o =>
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 
 
@@ -63,7 +65,11 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseExceptionHandler();
-
+app.MapGet("/api/debug/claims", (ClaimsPrincipal u) => new
+{
+    roleClaimType = (u.Identity as ClaimsIdentity)?.RoleClaimType,
+    claims = u.Claims.Select(c => new { c.Type, c.Value })
+}).RequireAuthorization();
 app.UseCors("SpaAndMobile");
 app.MapControllers();
 app.Run();

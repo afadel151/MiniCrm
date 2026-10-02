@@ -1,4 +1,5 @@
 // MiniCrm.Infrastructure/InfrastructureServiceCollectionExtensions.cs
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -59,8 +60,10 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
+                
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    
                     ValidateIssuer = true,
                     ValidIssuer = configuration[$"{JwtOptions.SectionName}:Issuer"],
 
@@ -75,7 +78,7 @@ public static class InfrastructureServiceCollectionExtensions
                         Encoding.UTF8.GetBytes(configuration[$"{JwtOptions.SectionName}:Key"]!)
                     ),
 
-                    RoleClaimType = "role",
+                    RoleClaimType = ClaimTypes.Role,
                     NameClaimType = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub
                 };
             });

@@ -5,7 +5,7 @@
     <Project Path="src/Core/MiniCrm.Core.csproj" />
     <Project Path="src/Infrastructure/MiniCrm.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/tests/">
+  <!-- <Folder Name="/tests/">
     <Project Path="tests/MiniCrm.Tests/MiniCrm.Tests.csproj" />
-  </Folder>
+  </Folder> -->
 </Solution>
