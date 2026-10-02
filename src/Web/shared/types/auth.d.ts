@@ -17,6 +17,13 @@ declare module '#auth-utils' {
   interface UserSession {
     loggedInAt?: number
   }
+  
+  interface CurrentBusiness {
+    businessId: int,
+    businessName: string,
+    membershipRole: string,
+    isPrimaryOwner: bool
+  }
 }
 
 export {}
