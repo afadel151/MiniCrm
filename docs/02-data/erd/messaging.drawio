@@ -1,0 +1,52 @@
+<mxfile>
+  <diagram id="autolayout" name="Page-1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="conversations" value="conversations&#xa;PK id&#xa;business_id&#xa;channel&#xa;status&#xa;contact_id&#xa;contact_display_name&#xa;client_user_id&#xa;wa_connection_id&#xa;phone_raw&#xa;phone_e164&#xa;phone_hash&#xa;assigned_member_id&#xa;last_message_at&#xa;client_message_count&#xa;member_message_count&#xa;unread_for_business&#xa;unread_for_client&#xa;client_last_read_at&#xa;blocked_at&#xa;blocked_by&#xa;closed_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="240" y="830" width="170" height="510" as="geometry"/>
+        </mxCell>
+        <mxCell id="message_templates" value="message_templates&#xa;PK id&#xa;business_id&#xa;connection_id&#xa;name&#xa;language&#xa;purpose&#xa;consent_purpose&#xa;body&#xa;variables&#xa;status&#xa;provider_template_id&#xa;rejection_reason&#xa;submitted_at&#xa;decided_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1360" width="170" height="370" as="geometry"/>
+        </mxCell>
+        <mxCell id="messages" value="messages&#xa;id&#xa;sent_at&#xa;FK business_id&#xa;FK conversation_id&#xa;sender_type&#xa;sender_user_id&#xa;body&#xa;FK template_id&#xa;template_params&#xa;has_attachments&#xa;external_message_id&#xa;status&#xa;delivered_at&#xa;read_at&#xa;failed_at&#xa;failure_code&#xa;redacted_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1270" width="170" height="410" as="geometry"/>
+        </mxCell>
+        <mxCell id="message_external_ids" value="message_external_ids&#xa;business_id&#xa;channel&#xa;external_message_id&#xa;message_id&#xa;message_sent_at&#xa;created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="820" width="170" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="message_attachments" value="message_attachments&#xa;PK id&#xa;FK business_id&#xa;FK conversation_id&#xa;message_id&#xa;message_sent_at&#xa;FK file_id&#xa;position&#xa;created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="990" width="170" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="channel_consent_states" value="channel_consent_states&#xa;business_id&#xa;phone_hash&#xa;channel&#xa;purpose&#xa;state&#xa;reason&#xa;source&#xa;effective_at&#xa;source_version&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="10" y="580" width="190" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="notifications" value="notifications&#xa;PK id&#xa;user_id&#xa;business_id&#xa;type&#xa;channel&#xa;payload&#xa;source_event_id&#xa;read_at&#xa;delivery_status&#xa;sent_at&#xa;attempts&#xa;claimed_until&#xa;last_error&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="230" width="160" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="notification_preferences" value="notification_preferences&#xa;PK id&#xa;user_id&#xa;business_id&#xa;type&#xa;channel&#xa;enabled&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="200" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="messages" target="conversations">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="1320"/><mxPoint x="220" y="1320"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e1" value="conversation_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="messages" target="conversations">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="1320"/><mxPoint x="220" y="1320"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e2" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="messages" target="message_templates">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="1470"/><mxPoint x="220" y="1470"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="template_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="messages" target="message_templates">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="1470"/><mxPoint x="220" y="1470"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="message_attachments" target="conversations">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="1120"/><mxPoint x="220" y="1120"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="conversation_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="message_attachments" target="conversations">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="1120"/><mxPoint x="220" y="1120"/></Array></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

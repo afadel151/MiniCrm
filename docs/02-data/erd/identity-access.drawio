@@ -1,0 +1,121 @@
+<mxfile>
+  <diagram id="autolayout" name="Page-1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="permissions" value="permissions&#xa;area&#xa;description&#xa;owner_only&#xa;sensitive&#xa;sort_order&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="0" y="90" width="160" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="permission_presets" value="permission_presets&#xa;name&#xa;permissions&#xa;data_scope&#xa;sort_order&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="560" y="590" width="160" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="users" value="users&#xa;PK id&#xa;email&#xa;email_normalized&#xa;email_verified_at&#xa;password_hash&#xa;security_stamp&#xa;full_name&#xa;FK avatar_file_id&#xa;locale&#xa;platform_role&#xa;status&#xa;suspended_at&#xa;deleted_at&#xa;access_failed_count&#xa;lockout_end&#xa;last_login_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="820" y="970" width="170" height="410" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth_identities" value="auth_identities&#xa;PK id&#xa;FK user_id&#xa;provider&#xa;provider_subject&#xa;provider_email&#xa;last_used_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1540" y="570" width="160" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth_sessions" value="auth_sessions&#xa;PK id&#xa;FK user_id&#xa;active_business_id&#xa;auth_method&#xa;mfa_verified_at&#xa;user_agent&#xa;ip&#xa;oidc_authorization_id&#xa;last_seen_at&#xa;expires_at&#xa;revoked_at&#xa;revoke_reason&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1350" y="510" width="180" height="310" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth_refresh_tokens" value="auth_refresh_tokens&#xa;id&#xa;issued_at&#xa;FK session_id&#xa;token_hash&#xa;expires_at&#xa;used_at&#xa;replaced_by_id" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1350" y="90" width="170" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth_tokens" value="auth_tokens&#xa;PK id&#xa;FK user_id&#xa;purpose&#xa;token_hash&#xa;email&#xa;expires_at&#xa;used_at&#xa;invalidated_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="550" width="160" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="user_mfa_factors" value="user_mfa_factors&#xa;PK id&#xa;FK user_id&#xa;kind&#xa;secret_ciphertext&#xa;key_id&#xa;label&#xa;confirmed_at&#xa;last_used_step&#xa;disabled_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="200" y="540" width="160" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="user_recovery_codes" value="user_recovery_codes&#xa;PK id&#xa;FK user_id&#xa;code_hash&#xa;used_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="370" y="590" width="170" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="businesses" value="businesses&#xa;PK id&#xa;name&#xa;slug&#xa;business_kind&#xa;category&#xa;status&#xa;verified_at&#xa;FK verified_by_user_id&#xa;trust_weight&#xa;FK wilaya_dataset_version&#xa;FK wilaya_code&#xa;address_text&#xa;public_phone_raw&#xa;public_phone_e164&#xa;public_email&#xa;currency&#xa;timezone&#xa;operating_mode&#xa;settings&#xa;FK created_by_user_id&#xa;suspended_at&#xa;suspension_reason&#xa;closed_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="800" y="390" width="210" height="550" as="geometry"/>
+        </mxCell>
+        <mxCell id="business_members" value="business_members&#xa;PK id&#xa;FK business_id&#xa;FK user_id&#xa;role&#xa;permissions&#xa;data_scope&#xa;status&#xa;FK preset_key&#xa;invitation_id&#xa;joined_at&#xa;revoked_at&#xa;FK revoked_by_user_id&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="180" y="10" width="180" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="business_invitations" value="business_invitations&#xa;PK id&#xa;FK business_id&#xa;email&#xa;email_normalized&#xa;role&#xa;permissions&#xa;data_scope&#xa;FK preset_key&#xa;token_hash&#xa;FK invited_by_user_id&#xa;expires_at&#xa;accepted_at&#xa;FK accepted_by_user_id&#xa;revoked_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="660" y="0" width="190" height="350" as="geometry"/>
+        </mxCell>
+        <mxCell id="api_keys" value="api_keys&#xa;PK id&#xa;FK business_id&#xa;name&#xa;key_prefix&#xa;secret_hash&#xa;scopes&#xa;FK created_by_user_id&#xa;last_used_at&#xa;expires_at&#xa;revoked_at&#xa;FK revoked_by_user_id&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="950" y="20" width="180" height="310" as="geometry"/>
+        </mxCell>
+        <mxCell id="client_profiles" value="client_profiles&#xa;PK id&#xa;FK user_id&#xa;client_type&#xa;company_name&#xa;FK wilaya_dataset_version&#xa;FK wilaya_code&#xa;default_address&#xa;phone_raw&#xa;phone_e164&#xa;phone_hash&#xa;phone_verified_at&#xa;phone_verification_method&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="500" width="210" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="feature_flags" value="feature_flags&#xa;PK id&#xa;FK business_id&#xa;scope&#xa;enabled&#xa;description&#xa;FK updated_by_user_id&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="70" width="180" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" value="user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="auth_identities" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1620" y="940"/><mxPoint x="1620" y="1320"/><mxPoint x="1620" y="1320"/><mxPoint x="1620" y="1320"/><mxPoint x="1000" y="1320"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e1" value="user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="auth_sessions" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1440" y="1000"/><mxPoint x="1440" y="1260"/><mxPoint x="1440" y="1260"/><mxPoint x="1440" y="1260"/><mxPoint x="1000" y="1260"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e2" value="session_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="auth_refresh_tokens" target="auth_sessions">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1440" y="260"/><mxPoint x="1440" y="490"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="auth_tokens" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="100" y="970"/><mxPoint x="100" y="1330"/><mxPoint x="100" y="1330"/><mxPoint x="100" y="1330"/><mxPoint x="800" y="1330"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="user_mfa_factors" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="280" y="940"/><mxPoint x="280" y="1180"/><mxPoint x="280" y="1180"/><mxPoint x="280" y="1180"/><mxPoint x="800" y="1180"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="user_recovery_codes" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="460" y="870"/><mxPoint x="460" y="1130"/><mxPoint x="460" y="1130"/><mxPoint x="460" y="1130"/><mxPoint x="800" y="1130"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="verified_by_user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="businesses" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="870" y="940"/><mxPoint x="870" y="960"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="created_by_user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="businesses" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="870" y="940"/><mxPoint x="870" y="960"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_members" target="businesses">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="280" y="400"/><mxPoint x="280" y="460"/><mxPoint x="280" y="460"/><mxPoint x="280" y="460"/><mxPoint x="780" y="460"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e9" value="user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_members" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="640"/><mxPoint x="190" y="1230"/><mxPoint x="190" y="1230"/><mxPoint x="190" y="1230"/><mxPoint x="800" y="1230"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e10" value="preset_key" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_members" target="permission_presets">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="460" y="180"/><mxPoint x="610" y="180"/><mxPoint x="610" y="180"/><mxPoint x="610" y="180"/><mxPoint x="610" y="570"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="revoked_by_user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_members" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="640"/><mxPoint x="190" y="1230"/><mxPoint x="190" y="1230"/><mxPoint x="190" y="1230"/><mxPoint x="800" y="1230"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e12" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_invitations" target="businesses">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="820" y="350"/><mxPoint x="820" y="370"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e13" value="preset_key" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_invitations" target="permission_presets">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="690" y="350"/><mxPoint x="690" y="570"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e14" value="invited_by_user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_invitations" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="750" y="610"/><mxPoint x="750" y="1070"/><mxPoint x="750" y="1070"/><mxPoint x="750" y="1070"/><mxPoint x="800" y="1070"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e15" value="accepted_by_user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_invitations" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="750" y="610"/><mxPoint x="750" y="1070"/><mxPoint x="750" y="1070"/><mxPoint x="750" y="1070"/><mxPoint x="800" y="1070"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e16" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="api_keys" target="businesses">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="980" y="330"/><mxPoint x="980" y="370"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e17" value="created_by_user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="api_keys" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1060" y="590"/><mxPoint x="1060" y="1090"/><mxPoint x="1060" y="1090"/><mxPoint x="1060" y="1090"/><mxPoint x="1000" y="1090"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e18" value="revoked_by_user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="api_keys" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1060" y="590"/><mxPoint x="1060" y="1090"/><mxPoint x="1060" y="1090"/><mxPoint x="1060" y="1090"/><mxPoint x="1000" y="1090"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e19" value="user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="client_profiles" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1180" y="970"/><mxPoint x="1180" y="1150"/><mxPoint x="1180" y="1150"/><mxPoint x="1180" y="1150"/><mxPoint x="1000" y="1150"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="feature_flags" target="businesses">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1220" y="350"/><mxPoint x="1220" y="440"/><mxPoint x="1220" y="440"/><mxPoint x="1220" y="440"/><mxPoint x="1020" y="440"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e21" value="updated_by_user_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="feature_flags" target="users">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1310" y="540"/><mxPoint x="1310" y="1210"/><mxPoint x="1310" y="1210"/><mxPoint x="1310" y="1210"/><mxPoint x="1000" y="1210"/></Array></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

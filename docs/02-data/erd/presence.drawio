@@ -1,0 +1,58 @@
+<mxfile>
+  <diagram id="autolayout" name="Page-1">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="business_profiles" value="business_profiles&#xa;PK id&#xa;business_id&#xa;name&#xa;slug&#xa;verified_at&#xa;FK wilaya_dataset_version&#xa;FK wilaya_code&#xa;public_phone_raw&#xa;public_phone_e164&#xa;public_email&#xa;identity_source_version&#xa;headline&#xa;about&#xa;FK logo_file_id&#xa;FK cover_file_id&#xa;opening_hours&#xa;social_links&#xa;categories&#xa;is_published&#xa;published_at&#xa;show_products&#xa;rating_sum&#xa;rating_count&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="240" y="780" width="210" height="550" as="geometry"/>
+        </mxCell>
+        <mxCell id="business_profile_gallery" value="business_profile_gallery&#xa;PK id&#xa;FK business_id&#xa;FK file_id&#xa;position&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="0" y="980" width="200" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="client_verified_phones" value="client_verified_phones&#xa;PK user_id&#xa;phone_hash&#xa;verified_at&#xa;source_version&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="10" y="790" width="190" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="review_eligibility" value="review_eligibility&#xa;PK id&#xa;business_id&#xa;basis&#xa;interaction_id&#xa;order_id&#xa;conversation_id&#xa;phone_hash&#xa;client_user_id&#xa;label&#xa;eligible_at&#xa;source_version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="480" y="280" width="160" height="290" as="geometry"/>
+        </mxCell>
+        <mxCell id="reviews" value="reviews&#xa;PK id&#xa;FK business_id&#xa;author_user_id&#xa;author_display_name&#xa;FK basis&#xa;FK interaction_id&#xa;order_id&#xa;conversation_id&#xa;rating&#xa;title&#xa;body&#xa;status&#xa;moderation_reason&#xa;moderated_at&#xa;moderated_by_user_id&#xa;edited_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="260" y="220" width="170" height="410" as="geometry"/>
+        </mxCell>
+        <mxCell id="review_replies" value="review_replies&#xa;PK id&#xa;FK business_id&#xa;FK review_id&#xa;member_user_id&#xa;body&#xa;edited_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="190" width="160" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="reports" value="reports&#xa;PK id&#xa;reporter_user_id&#xa;reporter_business_id&#xa;target_type&#xa;FK target_business_id&#xa;FK review_id&#xa;conversation_id&#xa;reason&#xa;details&#xa;status&#xa;resolved_at&#xa;resolved_by_user_id&#xa;resolution_note&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="10" y="420" width="180" height="330" as="geometry"/>
+        </mxCell>
+        <mxCell id="rating_parameters" value="rating_parameters&#xa;PK id&#xa;prior_weight_c&#xa;default_mean&#xa;platform_mean&#xa;review_count&#xa;computed_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="20" y="0" width="160" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="e0" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="business_profile_gallery" target="business_profiles">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="1060"/><mxPoint x="220" y="1060"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e1" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="reviews" target="review_eligibility">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="430" y="350"/><mxPoint x="470" y="350"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e2" value="basis" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="reviews" target="review_eligibility">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="430" y="350"/><mxPoint x="470" y="350"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="interaction_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="reviews" target="review_eligibility">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="430" y="350"/><mxPoint x="470" y="350"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="review_replies" target="reviews">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="180" y="280"/><mxPoint x="240" y="280"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="review_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="review_replies" target="reviews">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="180" y="280"/><mxPoint x="240" y="280"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="target_business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="reports" target="reviews">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="490"/><mxPoint x="240" y="490"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="review_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="reports" target="reviews">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="490"/><mxPoint x="240" y="490"/></Array></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

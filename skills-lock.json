@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "skills": {
+    "drawio-skill": {
+      "source": "Agents365-ai/drawio-skill",
+      "commit": "6550495129d9a42eff7e71434d15bfc9846b6202",
+      "sourceType": "github",
+      "skillPath": "skills/drawio-skill/SKILL.md",
+      "computedHash": "c67563a1b84cec8d0b905f7385a30ff96d7185a15d6fe570e6e4d2cf743916cc"
+    },
+    "nuxt-4-fullstack": {
+      "source": "shahabbasian/nuxt-4-fullstack",
+      "commit": "00cea299c199c1da6d4022cf6fc19435adeb6389",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "1da2f5a4bddf63ff5df47bb52f35abbc7f004c822759535b4433d104b6a21baf"
+    }
+  }
+}

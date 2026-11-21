@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "microsoft-learn": { "type": "http", "url": "https://learn.microsoft.com/api/mcp" },
+    "nuxt":            { "type": "http", "url": "https://nuxt.com/mcp" },
+    "primevue":        { "command": "npx", "args": ["-y", "@primevue/mcp"] },
+    "context7":        { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] },
+    "playwright":      { "command": "npx", "args": ["-y", "@playwright/mcp@latest"] },
+    "postgres-dev": {
+      "command": "uvx",
+      "args": ["postgres-mcp", "--access-mode=restricted"],
+      "env": { "DATABASE_URI": "${env:CRM_DEV_DATABASE_URI}" }
+    }
+  }
+}
