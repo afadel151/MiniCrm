@@ -56,8 +56,8 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 credentials.txt
-*.docx
-*.md
+docx
+*.md*.
 *.sql
 
 src/MiniCrm.Web.Blazor
