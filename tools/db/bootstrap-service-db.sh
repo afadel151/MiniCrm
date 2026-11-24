@@ -40,11 +40,14 @@ for r in app worker admin; do ensure_role "${db}_${r}" 0; done
 # -> <db>_engine). Always LOGIN NOBYPASSRLS non-owner; the service migration grants them what they need.
 roles_conf="$root/src/Services/$svc/$svc.Infrastructure/Database/roles.conf"
 if [[ -f "$roles_conf" ]]; then
-  while IFS= read -r suffix; do
+  # Read the config on fd 3, not stdin: ensure_role's `docker exec -i` would otherwise inherit fd 0 == this
+  # file and steal bytes from it, silently dropping every line after the first (caught only by checking the
+  # actual role list after a bootstrap on a FRESH cluster — a stray manually-created role can mask this).
+  while IFS= read -r suffix <&3; do
     [[ -z "$suffix" || "$suffix" == \#* ]] && continue
     [[ "$suffix" =~ ^[a-z_]+$ ]] || { echo "invalid role suffix '$suffix' in roles.conf" >&2; exit 2; }
     ensure_role "${db}_${suffix}" 0
-  done < "$roles_conf"
+  done 3< "$roles_conf"
 fi
 psql_admin -tc "SELECT 1 FROM pg_database WHERE datname='${db}'" | grep -q 1 || psql_admin -c "CREATE DATABASE ${db} OWNER ${db}_migrator;"
 psql_admin -d "$db" -c "REVOKE ALL ON DATABASE ${db} FROM PUBLIC; GRANT CONNECT ON DATABASE ${db} TO ${db}_app, ${db}_worker, ${db}_admin; REVOKE CREATE ON SCHEMA public FROM PUBLIC; ALTER SCHEMA public OWNER TO ${db}_migrator;"
