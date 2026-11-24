@@ -1,0 +1,52 @@
+# Local dev infra only (CLAUDE.md §3; Tech Decisions v0.2 rejects Compose for production — K8s is the target there).
+# One PostgreSQL 18 cluster hosts one database per service (docs/02-data/00-conventions.md §1); RabbitMQ and Valkey
+# are shared broker/cache instances. Superseded by the Aspire AppHost once Phase 5 (walking skeleton) lands.
+
+services:
+  postgres:
+    image: postgres:18
+    container_name: minicrm-pg
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devonly_postgres
+    ports:
+      - "55433:5432"
+    volumes:
+      - minicrm-pg-data:/var/lib/postgresql # PG 18 image layout: mount the parent dir, not .../data (docker-library/postgres#1259)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: minicrm-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - minicrm-rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  valkey:
+    image: valkey/valkey:8
+    container_name: minicrm-valkey
+    ports:
+      - "6379:6379"
+    volumes:
+      - minicrm-valkey-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  minicrm-pg-data:
+  minicrm-rabbitmq-data:
+  minicrm-valkey-data:
