@@ -17,13 +17,25 @@ business trust weight (identity-access owns `businesses.trust_weight`; scoring k
 into `net` is six `SECURITY DEFINER` functions with fixed `search_path` and minimal outputs.
 
 **Runtime roles** (justification: a single role would make every engine function reachable from the merchant API
-code; a DB grant boundary is the only guarantee that survives an application bug):
+code; a DB grant boundary is the only guarantee that survives an application bug). Updated by the 2026-11-20
+fix round (S9): the owner portal is its **own** role, split out of `scoring_app` — `scoring_app` is Scoring.Api
+only. `scoring_engine`/`scoring_portal` are declared via `Database/roles.conf` (`engine`, `portal`), which already
+gives bootstrap everything R1 asked for — no bootstrap-script change or workaround was needed.
 
 | Role | Process | Rights |
 |---|---|---|
-| `scoring_app` (bootstrap) | Scoring.Api: gRPC `GetScore`/`BatchGetScore`, owner portal | SELECT on own tenant rows (RLS); EXECUTE `lookup_score`, `owner_*` (5). Nothing in `net`, no writes anywhere |
-| `scoring_engine` (new) | Scoring.Worker: consumers, recompute, nightly decay, DSR worker | Explicit grants only (§8); NOBYPASSRLS; sets tenant from the envelope for tenant tables; EXECUTE `net.erase_phone` |
-| `scoring_migrator` | migration job, partition job | owner; definer of the SECURITY DEFINER functions |
+| `scoring_app` | Scoring.Api: gRPC `GetScore`/`BatchGetScore` | SELECT on own tenant rows (RLS) on the 4 public tables; EXECUTE `public.lookup_score` only. No USAGE on schema `net` at all. No writes anywhere (S9) |
+| `scoring_engine` | Scoring.Worker: consumers, recompute, nightly decay, DSR execution, erasure | Explicit grants only (schema `net` has no default privileges) on both `net.*` and the 4 `public.*` tables; NOBYPASSRLS; sets tenant from the envelope; EXECUTE `net.erase_phone` |
+| `scoring_portal` | owner self-view OTP portal | No table grants anywhere. EXECUTE on the 5 `owner_*` SECURITY DEFINER functions only |
+| `scoring_admin` | web-master console | SELECT across `net` for review queues; mutations only through `admin_*` SECURITY DEFINER functions (`admin_resolve_dispute`, `admin_release_legal_hold`, `admin_progress_dsr`, `admin_activate_score_model`, `admin_rotate_pepper`) — never a raw UPDATE on a state-machine table |
+| `scoring_migrator` | migration job, partition job | owner; definer of every SECURITY DEFINER function |
+
+A real pitfall worth recording: `ALTER DEFAULT PRIVILEGES ... IN SCHEMA public GRANT EXECUTE ON FUNCTIONS` (C0001)
+auto-grants EXECUTE to `_app`/`_worker` on every new function created in `public` at `CREATE FUNCTION` time —
+including the five `owner_*` bridge functions, even though only `scoring_portal` should ever call them. `REVOKE
+ALL ... FROM PUBLIC` does **not** undo this (it only touches the PUBLIC pseudo-role). The migration explicitly
+`REVOKE`s from `_app`/`_worker` by name before granting to the intended role. Caught by T0002, not by inspection —
+every SECURITY DEFINER function added to `public` by any service needs this same explicit revoke.
 
 ## 2. Table catalogue (21 tables)
 
@@ -178,10 +190,37 @@ and also revokes the engine role from every partition). Dropping a partition fir
 
 ## 10. Requests to building blocks
 
-- **R1** Bootstrap creates `scoring_engine` (LOGIN, NOBYPASSRLS, NOCREATEROLE) like `<db>_app`, or gives the migrator CREATEROLE.
-  Workaround: the migration tries `CREATE ROLE` (warns when refused) and exposes idempotent `net.apply_role_grants()`;
-  T0001 creates the role as the bootstrap would and re-applies grants.
-- **R2** `app.make_append_only(tbl, cols, erasure_hook boolean)` to allow controlled deletes for legal erasure, instead of the local trigger override (D9).
-- **R3** `app.lock_partitions` should revoke from every non-owner role that has a grant on the parent (not only `<db>_app`/PUBLIC). Workaround: `net.maintain_partitions()`.
-- **R4** `app.audit_log.actor_kind` lacks `phone_owner`; owner actions are logged as `system` with action `scoring.owner_*`.
-- **R5** ERD drawio (`docs/02-data/erd/scoring.drawio`) not produced in this task.
+- **R1 RESOLVED** — no bootstrap-script or building-block change needed. `Database/roles.conf` already supports
+  multiple extra-role suffixes; declaring `engine` and `portal` there gets both `scoring_engine` and
+  `scoring_portal` created by the existing generic mechanism, LOGIN NOBYPASSRLS non-owner, same as any other
+  service's extra role.
+- **R2 STANDING** — `app.make_append_only` still has no `erasure_hook` parameter. Implemented as the described
+  local override instead: `net.guard_append_only_erasure_delete()` replaces the generic DELETE-block trigger on
+  the 4 net tables keyed to a phone identity that must support erasure (`phone_epochs`, `phone_signals`,
+  `global_score_history`, `consents` — not the 6 originally estimated; `tenant_score_history`/`score_lookups`
+  stay fully blocked because tenant-layer erasure is Q6/DECIDE, out of scope for `net.erase_phone`). The guard
+  checks `current_setting('scoring.erasure_in_progress', true)`, set only inside `net.erase_phone`.
+- **R3 RESOLVED IN THIS ROUND** — `app.lock_partitions` (C0001) now revokes from every grantee on the partition
+  found via `aclexplode(relacl)`, not just `<db>_app`/PUBLIC, so no service-local `maintain_partitions()` workaround
+  was needed here.
+- **R4 RESOLVED IN THIS ROUND** — `app.audit_log.actor_kind` (C0002) now includes `phone_owner` directly.
+- **R5 STILL OPEN** — ERD drawio (`docs/02-data/erd/scoring.drawio`) not produced in this task.
+
+## 11. 2026-11-20 fix round — what was actually implemented
+
+`src/Services/Scoring/Scoring.Infrastructure/Database/{migrations,seed,tests}/` implements the design above with
+every **FIX**-disposition row from the review (X1-X7, S6, S7, S9, S10, S11 (mechanism only — see Q6), S12, S13,
+S14 is **not** implemented — nightly decay doesn't exist yet, there is no job to flood; revisit when it's built)
+and the **DEFAULT**-disposition rows as the conservative default described (S1, S2, S4, S5, P5), each as a
+`net.settings` value or a structural choice, not hardcoded. **DECIDE**/**P3**/**LATER** rows (S3, S8, S15, S16's
+runbook, E1, E3's confirmation) are deliberately left unimplemented, same as before.
+Validated end to end against PostgreSQL 18 in `minicrm-pg` (docker compose, this repo root):
+`tools/db/bootstrap-service-db.sh scoring Scoring --geo --reset` → `OK scoring`; `tools/db/audit-fks.sql` → 0 rows;
+3 test files (`T0001` tenant isolation, `T0002` role matrix, `T0003` the `lookup_score`/OTP flow against real
+data, including the S4/S7 freeze and version-guard regressions) all print `PASS`.
+Simplifications versus the full design worth flagging (scaffold-honesty): `owner_view_score` returns a plain
+month/had-negative-event shape rather than the fully worked-out coarse-granularity rules; there is no recompute
+engine, nightly decay job, or velocity/sabotage detection yet (S14, S8 are consumer/worker code, not schema); the
+k-gate, rate limits and oracle gate in `public.lookup_score` are real and tested, but the signal-ingestion and
+score-computation pipeline that would populate `net.global_scores` in production does not exist yet — this
+migration gives it a correct, secured place to write to.
