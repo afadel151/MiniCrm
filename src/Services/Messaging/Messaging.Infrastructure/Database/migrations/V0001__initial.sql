@@ -186,14 +186,24 @@ DO $$ DECLARE cli text := current_database() || '_client'; BEGIN
   EXECUTE format('GRANT SELECT, INSERT ON message_attachments TO %I', cli);
 END $$;
 
--- R2 (local workaround): app.files needs an extra permissive policy for a client uploader/reader, scoped to
--- files actually attached inside one of that client's own conversations.
+-- R2 (local workaround): app.files needs extra permissive policies for a client uploader/reader.
+-- Read: a file already attached inside one of that client's own conversations.
+-- Upload: before any message_attachments row exists, so the check is "the client has SOME conversation with
+-- this business" (the specific conversation_id is linked afterward by inserting message_attachments, which is
+-- itself RLS'd to the client's own conversations) — purpose/scan_status mirror _app's own RESTRICTIVE policy.
 DO $$ DECLARE cli text := current_database() || '_client'; BEGIN
   EXECUTE format('GRANT USAGE ON SCHEMA app TO %I', cli);
   EXECUTE format(
     'CREATE POLICY messaging_client_attachment ON app.files FOR SELECT TO %I USING (purpose = ''attachment'' AND EXISTS (SELECT 1 FROM message_attachments ma JOIN conversations c ON c.business_id = ma.business_id AND c.id = ma.conversation_id WHERE ma.file_id = app.files.id AND ma.business_id = app.files.business_id AND c.client_user_id = app.current_user_id()))',
     cli);
-  EXECUTE format('GRANT SELECT ON app.files TO %I', cli);
+  -- PERMISSIVE, not restrictive: tenant_isolation/files_platform_all (both keyed on app.business_id, which the
+  -- client role never sets) would otherwise be the only permissive policies in play, and neither can pass for
+  -- a client insert — a restrictive policy only narrows an already-passing permissive one, it cannot substitute
+  -- for one.
+  EXECUTE format(
+    'CREATE POLICY messaging_client_upload ON app.files FOR INSERT TO %I WITH CHECK (purpose = ''attachment'' AND scan_status = ''pending'' AND EXISTS (SELECT 1 FROM conversations c WHERE c.business_id = app.files.business_id AND c.client_user_id = app.current_user_id()))',
+    cli);
+  EXECUTE format('GRANT SELECT, INSERT ON app.files TO %I', cli);
 END $$;
 
 -- =================================================================================================================

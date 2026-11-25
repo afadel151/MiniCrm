@@ -33,7 +33,12 @@ END $$;
 RESET ROLE;
 
 -- Client path: client_x can see/insert into its own thread, client_y cannot.
+-- Clear app.business_id first: it's still set to biz_b from the staff check above (RESET ROLE does not clear a
+-- transaction-local setting), and a leftover value would wrongly satisfy app.files' generic tenant_isolation
+-- policy for the client-upload test further down, masking whether the client-specific policy is actually doing
+-- the work.
 SET ROLE messaging_client;
+SELECT set_config('app.business_id', NULL, true);
 SELECT set_config('app.user_id', '66666666-6666-6666-6666-666666666666', true);
 DO $$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM conversations WHERE id = '33333333-3333-3333-3333-333333333333') THEN
@@ -43,6 +48,21 @@ END $$;
 INSERT INTO messages (business_id, conversation_id, sender_type, body) VALUES
   ('11111111-1111-1111-1111-111111111111', '33333333-3333-3333-3333-333333333333', 'client', 'hello');
 DO $$ BEGIN RAISE NOTICE 'PASS: client_x can insert its own message into its own open thread'; END $$;
+
+-- R2: client can upload an attachment (app.files) into a business it has a conversation with, but not an
+-- arbitrary/unrelated business, and never with anything but scan_status='pending'.
+INSERT INTO app.files (id, business_id, storage_key, original_name, content_type, size_bytes, purpose) VALUES
+  ('88888888-8888-8888-8888-888888888888', '11111111-1111-1111-1111-111111111111', 'k1', 'photo.jpg', 'image/jpeg', 100, 'attachment');
+DO $$ BEGIN RAISE NOTICE 'PASS: client_x can upload an attachment into a business it has a conversation with'; END $$;
+DO $$ BEGIN
+  BEGIN
+    INSERT INTO app.files (business_id, storage_key, original_name, content_type, size_bytes, purpose) VALUES
+      ('22222222-2222-2222-2222-222222222222', 'k2', 'photo2.jpg', 'image/jpeg', 100, 'attachment');
+    RAISE EXCEPTION 'FAIL: client_x uploaded into a business it has no conversation with';
+  EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'PASS: upload into an unrelated business is rejected (%)', SQLERRM;
+  END;
+END $$;
 
 SELECT set_config('app.user_id', '77777777-7777-7777-7777-777777777777', true); -- client_y
 DO $$ BEGIN

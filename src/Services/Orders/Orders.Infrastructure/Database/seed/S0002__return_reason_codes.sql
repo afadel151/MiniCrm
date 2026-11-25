@@ -1,8 +1,11 @@
 -- S0002__return_reason_codes.sql — fault attribution catalogue. Codes, default_fault and counts_against_cont
 -- are transcribed from V1 spec §4.7 (return_reason_codes) and §5.5.2 (outcome classification); WRONG_NUMBER,
--- NEVER_ORDERED and BUSINESS_CANCELLED are not in §4.7's own (truncated, "...") example list but are needed to
--- represent two situations §5.5.2 names explicitly ("wrong number or 'I never ordered'" and "business cancels")
--- — added here, not themselves a literal transcription. Labels are drafts, not reviewed copy.
+-- NEVER_ORDERED, PARCEL_LOST, BUSINESS_CANCELLED and OTHER are not in §4.7's own (truncated, "...") example
+-- list but are needed to represent situations §5.5.2 names explicitly ("wrong number or 'I never ordered'",
+-- "parcel lost / carrier error", "business cancels") and to give the catalogue a catch-all — added here, not
+-- themselves a literal transcription (this is also docs/02-data/orders.md deviation #10's own list — kept in
+-- sync with it: PARCEL_LOST and OTHER were missing from an earlier draft of this seed, added to match). Labels
+-- are drafts, not reviewed copy.
 
 INSERT INTO return_reason_codes (key, fault_class, label_ar, label_fr, label_en) VALUES
   ('REFUSED_AT_DOOR', 'customer', 'رفض الاستلام', 'Refusé à la livraison', 'Refused at the door'),
@@ -14,6 +17,8 @@ INSERT INTO return_reason_codes (key, fault_class, label_ar, label_fr, label_en)
   ('LATE_DELIVERY', 'business', 'تأخير في التسليم', 'Livraison tardive', 'Late delivery'),
   ('DAMAGED', 'carrier', 'طرد تالف', 'Colis endommagé', 'Damaged in transit'),
   ('CARRIER_ISSUE', 'carrier', 'مشكلة في شركة التوصيل', 'Problème transporteur', 'Carrier issue'),
+  ('PARCEL_LOST', 'carrier', 'طرد ضائع', 'Colis perdu', 'Parcel lost'),
   ('WRONG_NUMBER', 'unknown', 'رقم خاطئ', 'Mauvais numéro', 'Wrong number'),
   ('NEVER_ORDERED', 'unknown', 'لم يطلب', 'N''a jamais commandé', 'Customer never ordered'),
-  ('BUSINESS_CANCELLED', 'business', 'إلغاء من التاجر', 'Annulé par le marchand', 'Cancelled by the business');
+  ('BUSINESS_CANCELLED', 'business', 'إلغاء من التاجر', 'Annulé par le marchand', 'Cancelled by the business'),
+  ('OTHER', 'unknown', 'أخرى', 'Autre', 'Other');
