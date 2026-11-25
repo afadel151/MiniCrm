@@ -1,18 +1,28 @@
-# 01-architecture — status: not started
+# 01-architecture — status: proposed, pending Phase 1b independent review
 
-Phase 1 (CLAUDE.md §8) has not been run yet. `docs/02-data/` (Phase 2) was started ahead of it, so the
-deliverables below have no home. Do not treat their absence as a decision — they are an open gap, not
-an "architecture lives elsewhere" choice.
+Phase 1 (CLAUDE.md §8) ran after Phase 2 (schemas), on explicit product-lead direction (G11) — written to match
+the 7 services already built and validated, not derived in the abstract. **Nothing here is accepted until
+Phase 1b** (`architecture-reviewer` agent, fresh context, adversarial) has run against it.
 
-Missing deliverables (CLAUDE.md §8, Phase 1):
-- Bounded contexts and context map
-- Service responsibilities, including the areas §6 marks unassigned (marketing, service, reporting, workflow automation)
-- C4 L1–L2 diagrams
-- Sequence diagrams for the 6 flows in Tech Decisions v0.2 §3.4
-- Degradation table (what still works when X is down)
-- NFR targets (latency, availability)
-- ADRs for any decision made while producing the above
+## Deliverables
 
-When Phase 1 runs: Opus 5.5 · xhigh · standard, skills `building-event-driven-microservices-dotnet`,
-`algeria-cod-crm`, `c4-architecture`; gated by 1b (`architecture-reviewer` agent, fresh context) before
-any ADR here is accepted.
+| File | Covers |
+|---|---|
+| `bounded-contexts.md` | The 8 contexts, context map, DDD relationship pattern per pair, resolves G7 (marketing/service/automation/reporting homes — formalised in ADR-0007) |
+| `c4-diagrams.md` | C4 L1 (System Context) and L2 (Container) |
+| `sequence-diagrams.md` | The 6 flows from Tech Decisions v0.2 §3.4, grounded in the actual triggers/functions already built |
+| `degradation-table.md` | What still works / what breaks when each service, RabbitMQ, Valkey, or a single Postgres instance is down |
+| `nfr-targets.md` | Latency, availability, RTO/RPO targets — all `[Guessing]` until spike S1 (walking skeleton) measures them |
+
+New ADR produced alongside this phase: `docs/adr/0007-marketing-service-automation-reporting-homes.md`.
+
+## What this phase intentionally does not do
+
+- No new tables for the two existing-service extensions ADR-0007 assigns (crm gains cases/segments, messaging
+  gains campaigns) — those are future Phase 2 work for those two services, not retrofitted into schemas already
+  built and validated.
+- No contracts (`.proto`, event catalogue, JSON Schema) — that's Phase 3, and per G11 it still needs the
+  sequence diagrams here as its own input first.
+- No resolution of the still-open items this phase surfaces but doesn't own: G3 (wilaya dataset), G8 (Wolverine
+  vs in-repo, spike S2), G9/G10 (legal gate, erasure policy) — listed in `bounded-contexts.md` §5, not
+  re-decided here.
