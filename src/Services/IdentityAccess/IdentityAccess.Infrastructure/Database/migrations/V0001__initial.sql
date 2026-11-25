@@ -138,11 +138,12 @@ CREATE TABLE client_profiles (
   phone_raw text,
   phone_e164 text CHECK (phone_e164 ~ '^\+[1-9][0-9]{6,14}$'),
   phone_hash bytea CHECK (phone_hash IS NULL OR octet_length(phone_hash) = 32), -- all-or-none with proof (D7)
+  pepper_version int, -- ADR-0002 amendment / S16; all-or-none with phone_hash
   proven_at timestamptz,
   default_address jsonb,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
-  CHECK ((phone_raw IS NULL) = (phone_e164 IS NULL) AND (phone_e164 IS NULL) = (phone_hash IS NULL))
+  CHECK ((phone_raw IS NULL) = (phone_e164 IS NULL) AND (phone_e164 IS NULL) = (phone_hash IS NULL) AND (phone_hash IS NULL) = (pepper_version IS NULL))
 );
 CREATE UNIQUE INDEX ux_client_profiles_user ON client_profiles (user_id);
 CREATE UNIQUE INDEX ux_client_profiles_phone_hash ON client_profiles (phone_hash) WHERE phone_hash IS NOT NULL;

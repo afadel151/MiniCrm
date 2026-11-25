@@ -19,6 +19,7 @@ CREATE TABLE conversations (
   phone_raw text,
   phone_e164 text CHECK (phone_e164 IS NULL OR phone_e164 ~ '^\+[1-9][0-9]{6,14}$'),
   phone_hash bytea CHECK (phone_hash IS NULL OR octet_length(phone_hash) = 32),
+  pepper_version int, -- ADR-0002 amendment / S16; all-or-none with phone_hash
   status text NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'closed')),
   assigned_member_id uuid, -- opaque ref: identity_access.business_members
   client_message_count int NOT NULL DEFAULT 0,
@@ -34,7 +35,8 @@ CREATE TABLE conversations (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (business_id, id),
-  CHECK (channel = 'whatsapp' OR (wa_connection_id IS NULL AND phone_hash IS NULL))
+  CHECK (channel = 'whatsapp' OR (wa_connection_id IS NULL AND phone_hash IS NULL)),
+  CHECK ((phone_hash IS NULL) = (pepper_version IS NULL))
 );
 CREATE UNIQUE INDEX ux_conversations_in_app_client ON conversations (business_id, client_user_id) WHERE channel = 'in_app';
 CREATE UNIQUE INDEX ux_conversations_whatsapp_phone ON conversations (business_id, wa_connection_id, phone_hash) WHERE channel = 'whatsapp';
@@ -331,6 +333,6 @@ DO $$ DECLARE db text := current_database(); app_r text := current_database() ||
   -- trigger/consumer-maintained, never a raw staff UPDATE target) and id/business_id/created_at.
   EXECUTE format('REVOKE UPDATE ON conversations FROM %I', app_r);
   EXECUTE format(
-    'GRANT UPDATE (channel, client_user_id, contact_id, contact_display_name, wa_connection_id, phone_raw, phone_e164, phone_hash, status, assigned_member_id, staff_last_read_at, blocked_at, blocked_by, last_message_at, version, updated_at) ON conversations TO %I',
+    'GRANT UPDATE (channel, client_user_id, contact_id, contact_display_name, wa_connection_id, phone_raw, phone_e164, phone_hash, pepper_version, status, assigned_member_id, staff_last_read_at, blocked_at, blocked_by, last_message_at, version, updated_at) ON conversations TO %I',
     app_r);
 END $$;

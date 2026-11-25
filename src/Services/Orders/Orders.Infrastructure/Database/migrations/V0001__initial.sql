@@ -99,6 +99,7 @@ CREATE TABLE orders (
   phone_raw text NOT NULL,
   phone_e164 text NOT NULL CHECK (phone_e164 ~ '^\+[1-9][0-9]{6,14}$'),
   phone_hash bytea NOT NULL CHECK (octet_length(phone_hash) = 32),
+  pepper_version int NOT NULL DEFAULT 1, -- ADR-0002 amendment / S16: rotation must not silently break this hash
   address_text text,
   address_notes text,
   geo_dataset_version int,

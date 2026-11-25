@@ -52,6 +52,7 @@ CREATE TABLE contact_phones (
   phone_raw text NOT NULL,
   phone_e164 text NOT NULL CHECK (phone_e164 ~ '^\+[1-9][0-9]{6,14}$'),
   phone_hash bytea NOT NULL CHECK (octet_length(phone_hash) = 32),
+  pepper_version int NOT NULL DEFAULT 1, -- ADR-0002 amendment / S16: rotation must not silently break this hash
   is_primary boolean NOT NULL DEFAULT false,
   status text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'wrong_number', 'invalid')),
   line_type text,
@@ -329,6 +330,7 @@ CREATE TABLE call_logs (
   attempt_no int NOT NULL CHECK (attempt_no > 0),
   contact_phone_id uuid,
   phone_hash bytea NOT NULL CHECK (octet_length(phone_hash) = 32),
+  pepper_version int NOT NULL DEFAULT 1, -- ADR-0002 amendment / S16
   disposition text NOT NULL CHECK (disposition IN ('answered', 'unreachable', 'wrong_number', 'busy', 'no_answer')),
   outcome text,
   answered_at timestamptz,
