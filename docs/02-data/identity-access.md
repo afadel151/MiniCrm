@@ -172,6 +172,10 @@ enabled, removed, version}`, `tenant_id` = business_id (NULL for global). The se
 - **MFA** mandatory for web_master and owners (v0.2 §7.6) is enforced at login (forced enrolment), not by a DB constraint.
 - **PII**: `users.email/full_name`, `auth_sessions.ip/user_agent`, `auth_tokens.email`, `business_invitations.email`,
   `client_profiles.phone_*`/`default_address`, `businesses.public_*` (business, public). Never logged; audit diffs scrubbed.
+- **Pepper scope (ADR-0002 amendment, 2026-11-24):** `client_profiles.phone_hash` is computed independently from
+  the pepper here (needed to prove the OTP-verified phone matches scoring's — CLAUDE.md §5 phone-owner rights),
+  widening ADR-0002's original 3-service list to 5. `client_profiles.pepper_version int` (all-or-none with
+  `phone_hash`) added so pepper rotation doesn't silently break this match (S16).
 - **Partitions** of `auth_refresh_tokens` are not readable directly by the runtime role (tested, T0003).
 - `SECURITY DEFINER` functions pin `search_path`, have EXECUTE revoked from PUBLIC and granted to the runtime role only.
 

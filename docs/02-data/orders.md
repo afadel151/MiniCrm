@@ -113,6 +113,21 @@ External FKs inside the same DB: `ref.wilayas`/`ref.communes` (geo, versioned) a
 
 `order_status_transitions` holds one row per legal edge (`from_status NULL` = legal initial state), with
 `allowed_sources` and `requires_reason`. Order edges are the §5.5 table verbatim (21 edges incl. 3 initial).
+
+**Vocabulary, as built** (2026-11-24 rebuild, cross-checked against the V1 spec PDF once it was added to
+`docs/reference/` — this replaced an earlier `[Guessing]` reconstruction written before that PDF was available):
+- `orders.status`: `draft, pending_confirmation, confirmed, processing, shipped, out_for_delivery, delivered,
+  delivery_failed, return_in_transit, returned, cancelled` (§5.5).
+- `orders.cash_status`: `pending_collection, collected_by_carrier, collected_by_business, remitted, reconciled,
+  disputed, not_collected, written_off, refunded, not_applicable` — `[Guessing]`, no spec source (D1).
+- `orders.outcome_class`: `success, customer_failure, business_failure, neutral` — verbatim §5.5.2 (not
+  `customer_fault`/`carrier_fault`/`merchant_fault`/`unknown`, an earlier pre-PDF naming this replaced).
+- `return_cases.status`: `open, received, restocked, written_off, disputed` — verbatim §4.7 (not
+  `open/under_review/resolved`, likewise replaced). "Mark received" (§5.7) is an explicit agent action between
+  `open` and the restock decision.
+- `return_reason_codes.fault_class` / `return_cases.fault_class`: `customer, business, carrier, unknown` —
+  verbatim §4.7 (not `merchant`, likewise replaced).
+
 Two guards make an illegal transition impossible to commit:
 
 1. **`trg_osh_validate`** (BEFORE INSERT on `order_status_history`): the edge must exist, the `source` must be allowed
@@ -134,10 +149,13 @@ Return cases use the same table (`machine='return'`) through a BEFORE UPDATE tri
 **Why table + trigger, not hard-coded CHECK/CASE:** one data source the C# state machine, the order-detail stepper
 ("allowed next actions") and the DB all read; a contract test asserts C# == table. A CHECK can only validate values,
 not edges (it cannot see OLD). Cost: one indexed lookup per transition, and the table is read-only for the app role
-(changes only via reviewed seed). **Tested** (T0002): full happy path for both machines, 15+ refused transitions,
-unlogged changes, wrong-version logs, override with/without note, expiry by system, return-case edges, and a
-reachability check that every status is reachable and `returned`/`cancelled` are sinks. A mutated test was run to
-prove the assertions bite. Deferred guards were also verified at a real `COMMIT` with a transaction-local tenant.
+(changes only via reviewed seed).
+
+**Tested** (T0001-T0003, 2026-11-24 rebuild): happy path for both machines, one illegal edge, one unlogged
+change, one stale version, override with/without note, and the return-case edges, each verified against a real
+`COMMIT` with a transaction-local tenant. **Scaffold honesty:** this is a representative subset, not the fuller
+"15+ refused transitions / full reachability check / mutation testing" coverage this section originally
+described — that level of exhaustiveness is future work (Phase 6), not claimed as already done here.
 
 ## 6. Order numbers (UNIQUE per business, gap-tolerant)
 

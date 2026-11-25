@@ -112,13 +112,15 @@ resolved reports deleted after 24 months; eligibility rows of unreviewed orders 
   tables return 0 rows without context; `author_user_id`, `interaction_id`, `moderation_reason`, `rating_sum`,
   `identity_source_version` raise `undefined_column` through `pub`; views are not writable. `security_barrier` is not set because
   the runtime role has no TEMP/CREATE privilege (no user-defined leaky functions) and it would disable the trigram index.
-- **Client path** (`app.user_id`, no tenant): sees eligibility rows matching its verified phone hash or its own conversations,
-  its own reviews/replies/reports/phone link; inserts reviews only for a visible eligibility row (DB-enforced §7.1), edits only
-  content of its own reviews (`edited_at` set by trigger). 7-day edit window [Guessing] is config, enforced in the handler.
-- **web_master path** (`app.platform_role='web_master'` + `app.user_id`): reads all reviews/replies/reports, changes review status
-  (hide/restore/remove with reason, `removed` terminal) and resolves reports. Only web_master can change moderation columns; even
-  web_master cannot edit review content (guard trigger). A dedicated `presence_admin` role is preferable (R3).
-- **Staff path** (`app.business_id`): manage its profile (no column grant on the rating aggregate), read its reviews, reply once,
+- **web_master path = `presence_admin`** (role, not an `app.platform_role` setting — R2 superseded, see §10):
+  reads all reviews/replies/reports, changes review status (hide/restore/remove with reason, `removed` terminal)
+  and resolves reports. Only `presence_admin` can change moderation columns; even `presence_admin` cannot edit
+  review content (`guard_review_update` trigger, checked by `current_user`, enforced regardless of grants).
+- **Client path = `presence_client`** (role, R1/P1 fix — separate from staff, `app.user_id`): sees eligibility
+  rows matching its verified phone hash or its own conversations, its own reviews/replies/reports/phone link;
+  inserts reviews only for a visible eligibility row (DB-enforced §7.1), edits only content of its own reviews
+  (`edited_at` set by trigger). 7-day edit window [Guessing] is config, enforced in the handler.
+- **Staff path = `presence_app`** (`app.business_id`): manage its profile (no column grant on the rating aggregate), read its reviews, reply once,
   report; never sees reports about itself nor client phone hashes.
 - `reviews_maintain_rating` and `refresh_rating_parameters` are SECURITY DEFINER with fixed `search_path`.
 - PII: `reviews.author_display_name/title/body` (public by intent, user-supplied), `public_phone/email` (business, public),
@@ -139,8 +141,17 @@ resolved reports deleted after 24 months; eligibility rows of unreviewed orders 
 
 ## 10. Requests to building blocks
 
-- **R1** `app.current_user_id()` (setting `app.user_id`) in C0001 (presence and messaging define `public.current_user_id()` locally).
-- **R2** `app.current_platform_role()` / a standard `app.platform_role` setting written by the API from the token.
-- **R3** Bootstrap `<db>_admin` (web-master) and optionally `<db>_public` (anonymous, SELECT on `pub` only) roles so the public and
-  moderation paths stop sharing the runtime role.
-- **R4** C0003 test fixture helper (a `test-only` dataset) so service tests need not insert into `ref` themselves.
+- **R1 RESOLVED** — `app.current_user_id()` is in C0001 (added during the scoring rebuild, 2026-11-24); no local
+  `public.current_user_id()` needed here.
+- **R2 SUPERSEDED, not built** — the rebuild follows the cross-cutting X1 fix instead ("powers come from roles,
+  never settings"): moderation is gated by the `presence_admin` role directly (column grants + `guard_review_update`),
+  not an `app.platform_role` setting the API would have to set correctly on every request. No
+  `app.current_platform_role()` exists, by design.
+- **R3 PARTIALLY RESOLVED** — `<db>_admin` (`presence_admin`) already exists via the standard ADR-0006 trio, no
+  extra work needed. A dedicated `presence_public` role was **not** built: `pub.business_profiles`/`pub.reviews`
+  are granted to `presence_app`/`_client`/`_admin` plus `GRANT USAGE ON SCHEMA pub TO PUBLIC`, which already
+  serves anonymous HTTP requests correctly (the views run with the owner's BYPASSRLS rights regardless of which
+  of those three roles the API connects as) — the optional purity improvement in the original request is left
+  open, not required for correctness.
+- **R4 NOT BUILT** — no C0003 test fixture helper exists; this rebuild's tests construct any needed `ref.*` rows
+  inline per test file where required (none of presence's own tests currently need one).

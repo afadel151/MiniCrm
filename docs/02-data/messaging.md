@@ -111,23 +111,37 @@ Consumed (inbox `app.inbox`, tenant from envelope):
 
 ## 8. Security notes
 
-- **Two RLS paths.** Staff: `tenant_isolation` (`app.business_id`). Client: `client_*` policies keyed by
-  `conversations.client_user_id = current_user_id()` (setting `app.user_id`, transaction-local). Policies are permissive and
-  OR-ed, so a person who is both staff and client sees the union of what each role allows. Messages/attachments use an EXISTS
-  on the client's conversation (covered by `ix_messages_thread` + PK).
+- **Two RLS paths, two roles (M1 fix).** Staff = `messaging_app` (`tenant_isolation`, `app.business_id`). Client =
+  `messaging_client` — a **separate role** declared in `roles.conf`, not extra policies bolted onto the staff
+  role, so a DB grant boundary survives an app bug a policy alone would not. Client policies are keyed by
+  `conversations.client_user_id = app.current_user_id()` (setting `app.user_id`, transaction-local) and are
+  permissive, OR'd with `tenant_isolation` on the same tables. Messages/attachments use an EXISTS on the
+  client's conversation (covered by `ix_messages_thread` + PK).
 - Client writes are limited: insert `in_app` threads for themselves only (no assignee/blocked), insert `sender_type='client'`
-  messages only into their own open, non-blocked thread, update only read markers/counters (`guard_client_update` trigger) and
-  delivery state of messages (column grants from `make_append_only`). Tested in T0001.
+  messages only into their own open, non-blocked thread, update only read markers/counters (`guard_client_update` trigger,
+  defense in depth even if a grant is ever too broad) and delivery state of messages (column grants from `make_append_only`).
+  Tested in T0001.
 - Partitions of `messages` (and of the C0002 tables) are locked by `app.lock_partitions`: the runtime role, on the staff or client
   path, gets `insufficient_privilege` on any direct partition read/insert (T0001 §4b); data is reachable only through the parent.
-- `app.files` gets two extra permissive policies for `purpose='attachment'` (uploader = client, or file attached in the client's
-  thread) — local workaround, request R2.
+- `app.files` gets two extra permissive policies for `messaging_client`, request R2, both tested (T0001): SELECT
+  (a file already attached inside one of the client's own conversations) and INSERT (`purpose='attachment'`,
+  `scan_status='pending'`, and the client has *some* conversation with that `business_id` — the specific
+  `conversation_id` link happens afterward via `message_attachments`, itself RLS'd). The INSERT policy must be
+  **permissive**, not restrictive: `tenant_isolation`/`files_platform_all` (both keyed on `app.business_id`,
+  which the client role never sets) are the only other policies in play, and neither can pass for a client
+  insert — a restrictive policy only narrows an already-passing permissive one, it cannot substitute for one.
 - `notifications`/`notification_preferences`: RLS by recipient; inserts must also match the current tenant or be platform rows.
   The e-mail dispatcher uses `claim_email_notifications()` / `complete_email_notification()` (SECURITY DEFINER, owner is the
   BYPASSRLS migrator, fixed `search_path`, returns only sender columns).
 - PII: `phone_raw/phone_e164`, `contact_display_name`, `messages.body`, `template_params`. Erasure = `body/template_params → NULL`
-  + `redacted_at` (only change allowed besides delivery state; irreversible). `phone_hash` = HMAC-SHA256 with the pepper from the
-  secret store (computed in app). No tokens or secrets stored.
+  + `redacted_at` (only change allowed besides delivery state; irreversible, enforced by `guard_message_redaction`). `phone_hash`
+  = HMAC-SHA256 with the pepper from the secret store (computed in app). No tokens or secrets stored.
+- **Pepper scope (ADR-0002 amendment, 2026-11-24):** `conversations.phone_hash` is computed independently from
+  the pepper here (needed to route an inbound WhatsApp webhook to a thread before any thread is known — this is
+  the one case `channel_consent_states` does *not* need, since that table receives an already-hashed phone via
+  `scoring.consent.changed`). Widens ADR-0002's original 3-service list to 5.
+  `conversations.pepper_version int` (all-or-none with `phone_hash`) added so pepper rotation doesn't silently
+  break routing (S16).
 
 ## 9. Open questions
 
@@ -142,8 +156,11 @@ Consumed (inbox `app.inbox`, tenant from envelope):
 
 ## 10. Requests to building blocks
 
-- **R1** Add `app.current_user_id()` (setting `app.user_id`) to C0001; messaging and presence both define `public.current_user_id()` locally today.
-- **R2** `app.files` policy for non-tenant uploaders (client attachments). Messaging adds a local permissive policy on `app.files`.
-- **R3** `app.forbid_update_except()` should ignore generated columns (in BEFORE UPDATE, NEW.generated is NULL, so any STORED
-  generated column reads as "changed"). Messaging dropped a generated `direction` column to work around it.
-- **R4** Bootstrap the `<db>_admin` platform role (web-master console, M5) so moderation/break-glass policies can target it.
+- **R1 RESOLVED** — `app.current_user_id()` is in C0001 (added during the scoring rebuild, 2026-11-24); no local
+  `public.current_user_id()` needed here.
+- **R2 RESOLVED** — `app.files` SELECT + INSERT policies for `messaging_client`, see §8 above; both tested.
+- **R3 NOT APPLICABLE to this rebuild** — no generated `direction` column exists in the schema as rebuilt; the
+  append-only whitelist (`status`/`redacted_at`/`body`/`template_params` on `messages`) didn't need one. Leaving
+  this row for traceability in case the original design's generated column resurfaces in a future revision.
+- **R4 RESOLVED** — the standard `<db>_admin` role (ADR-0006, bootstrap creates it unconditionally for every
+  service) is `messaging_admin`; no extra `roles.conf` entry was needed for it.

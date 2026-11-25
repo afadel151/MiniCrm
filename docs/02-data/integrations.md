@@ -35,7 +35,7 @@ conversations, messages (→ messaging, gap G6; WhatsApp template registration g
 | `outbound_calls` | (new) spec §9 "integration health" debugging | tenant | yes | monthly `started_at` |
 
 Plus `app.*` from C0001/C0002 (outbox, inbox, audit_log, files, tenants) and `ref.*` from C0003.
-Functions: `resolve_webhook_connection`, `ingest_webhook_event`, `claim_webhook_events`, `claim_carrier_requests`,
+Functions: `resolve_webhook_connection_by_route`, `resolve_webhook_connection_by_account`, `ingest_webhook_event`, `claim_webhook_events`, `claim_carrier_requests`,
 `claim_shipments_to_poll`, `purge_webhook_event_keys` (all but `ingest` are SECURITY DEFINER; see §8).
 
 ## 3. ERD
@@ -86,8 +86,8 @@ Every tenant child uses a **composite FK `(business_id, connection_id)`**, so a 
 
 | Index | Query / consumer |
 |---|---|
-| `uq_ic_route_key` | `resolve_webhook_connection(route_key)`: public webhook endpoint `/webhooks/{kind}/{route_key}` |
-| `ux_ic_external_account` (partial, live) | `resolve_webhook_connection(kind, account)`: app-level webhooks (WhatsApp `phone_number_id`, Shopify shop domain); also prevents routing ambiguity |
+| `uq_ic_route_key` | `resolve_webhook_connection_by_route(route_key)`: public webhook endpoint `/webhooks/{kind}/{route_key}` |
+| `ux_ic_external_account` (partial, live) | `resolve_webhook_connection_by_account(kind, carrier_code, account)`: app-level webhooks (WhatsApp `phone_number_id`, Shopify shop domain); also prevents routing ambiguity |
 | `uq_ic_business_id` | target of composite FKs; Integrations screen list per tenant (prefix `business_id`) |
 | `ix_cs_live` | adapter loads live secrets of a connection by purpose (verify webhook, call API) |
 | `ix_we_pending` (spec §4.10 partial `status='pending'`) | health card: queue depth and oldest pending per connection |
@@ -144,9 +144,10 @@ Consumed (idempotent via `app.inbox` (event_id, consumer) + natural keys above):
 - RLS (`app.enable_tenant_rls`) on all 10 tenant tables; T0001 checks each with a generic helper and fails if a new
   business_id table lacks forced RLS. Partitions: runtime role holds **no** privilege on them (C0001 `lock_partitions`);
   T0001 asserts it for `public` and `app` partitions and that a direct partition read is refused.
-- **Tenant from the connection.** The public webhook endpoint calls `resolve_webhook_connection` (SECURITY DEFINER,
-  owner `integrations_migrator` with BYPASSRLS) which returns only ids + status for a 128-bit route key or a provider
-  account id. The handler then sets `app.business_id` transaction-locally, loads secrets under RLS, verifies the
+- **Tenant from the connection.** The public webhook endpoint calls `resolve_webhook_connection_by_route` (route
+  key) or `resolve_webhook_connection_by_account` (kind+carrier_code+account) — split into two functions rather
+  than one with optional params, both SECURITY DEFINER, owner `integrations_migrator` with BYPASSRLS, returning
+  only ids + status. The handler then sets `app.business_id` transaction-locally, loads secrets under RLS, verifies the
   signature and calls `ingest_webhook_event` (SECURITY INVOKER, refuses without tenant).
 - Worker claim functions are SECURITY DEFINER and return **ids and business_id only** (no payload); the worker then
   processes each item in its own transaction under that tenant. `search_path` is pinned; EXECUTE revoked from PUBLIC.
