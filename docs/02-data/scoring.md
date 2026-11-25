@@ -204,7 +204,8 @@ and also revokes the engine role from every partition). Dropping a partition fir
   found via `aclexplode(relacl)`, not just `<db>_app`/PUBLIC, so no service-local `maintain_partitions()` workaround
   was needed here.
 - **R4 RESOLVED IN THIS ROUND** — `app.audit_log.actor_kind` (C0002) now includes `phone_owner` directly.
-- **R5 STILL OPEN** — ERD drawio (`docs/02-data/erd/scoring.drawio`) not produced in this task.
+- **R5 RESOLVED (2026-11-24)** — `docs/02-data/erd/scoring.drawio`/`.png` generated from the actual DDL
+  (`sqlerd.py` + `autolayout.py`, via `/drawio-skill`), replacing a stale pre-restart diagram.
 
 ## 11. 2026-11-20 fix round — what was actually implemented
 

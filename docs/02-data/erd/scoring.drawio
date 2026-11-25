@@ -5,133 +5,136 @@
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
         <mxCell id="group_0" value="net" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;fontColor=#6c8ebf;verticalAlign=top;fontStyle=2;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="6" y="6" width="648" height="3798" as="geometry"/>
+          <mxGeometry x="6" y="6" width="3728" height="728" as="geometry"/>
         </mxCell>
         <mxCell id="group_1" value="public" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82b366;fontColor=#82b366;verticalAlign=top;fontStyle=2;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="26" y="3806" width="428" height="1058" as="geometry"/>
+          <mxGeometry x="3746" y="56" width="738" height="518" as="geometry"/>
         </mxCell>
-        <mxCell id="pepper_versions" value="pepper_versions&#xa;PK version&#xa;status&#xa;activated_at&#xa;retired_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="464" y="2004" width="160" height="150" as="geometry"/>
+        <mxCell id="pepper_versions" value="pepper_versions&#xa;PK id: uuid&#xa;version: int&#xa;status: text&#xa;activated_at: timestamptz&#xa;retired_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="1464" y="574" width="210" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="score_models" value="score_models&#xa;PK id&#xa;version&#xa;status&#xa;params&#xa;params_sha256&#xa;description&#xa;backtest_ref&#xa;active_from&#xa;retired_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="264" y="3474" width="160" height="250" as="geometry"/>
+        <mxCell id="phone_identities" value="phone_identities&#xa;PK id: uuid&#xa;phone_hash: bytea&#xa;FK pepper_version: int&#xa;current_epoch: int&#xa;created_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="1474" y="384" width="200" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="settings" value="settings&#xa;value&#xa;description&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="44" y="24" width="160" height="110" as="geometry"/>
+        <mxCell id="erasure_suppressions" value="erasure_suppressions&#xa;PK phone_hash: bytea&#xa;mode: text&#xa;suppressed_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="3484" y="124" width="220" height="90" as="geometry"/>
         </mxCell>
-        <mxCell id="feature_flags" value="feature_flags&#xa;PK id&#xa;flag_key&#xa;business_id&#xa;enabled&#xa;source_version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="44" y="154" width="160" height="170" as="geometry"/>
+        <mxCell id="phone_epochs" value="phone_epochs&#xa;id: uuid&#xa;FK phone_identity_id: uuid&#xa;epoch: int&#xa;reason: text&#xa;started_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="1844" y="104" width="220" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="phone_identities" value="phone_identities&#xa;PK id&#xa;phone_hash&#xa;FK pepper_version&#xa;operator_hint&#xa;current_epoch&#xa;epoch_started_at&#xa;first_seen_at&#xa;last_signal_at&#xa;erasure_state&#xa;erased_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="264" y="1934" width="160" height="290" as="geometry"/>
+        <mxCell id="score_models" value="score_models&#xa;PK id: uuid&#xa;version: text&#xa;status: text&#xa;params: jsonb&#xa;params_sha256: bytea&#xa;active_from: timestamptz&#xa;retired_at: timestamptz&#xa;created_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="3264" y="354" width="200" height="190" as="geometry"/>
         </mxCell>
-        <mxCell id="phone_epochs" value="phone_epochs&#xa;PK id&#xa;FK phone_identity_id&#xa;epoch&#xa;started_at&#xa;reason&#xa;recorded_by_kind&#xa;recorded_by_id&#xa;created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="44" y="2214" width="170" height="190" as="geometry"/>
+        <mxCell id="settings" value="settings&#xa;value_int: bigint&#xa;value_text: text&#xa;updated_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="3034" y="124" width="200" height="90" as="geometry"/>
         </mxCell>
-        <mxCell id="business_trust" value="business_trust&#xa;PK business_id&#xa;trust_weight&#xa;trust_source_version&#xa;status&#xa;first_signal_at&#xa;terminal_orders&#xa;disclaimer_count&#xa;status_reason&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="44" y="674" width="170" height="250" as="geometry"/>
+        <mxCell id="feature_flags" value="feature_flags&#xa;enabled: boolean&#xa;source_version: bigint&#xa;updated_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="2814" y="124" width="200" height="90" as="geometry"/>
         </mxCell>
-        <mxCell id="phone_signals" value="phone_signals&#xa;id&#xa;occurred_at&#xa;FK phone_identity_id&#xa;phone_epoch&#xa;business_id&#xa;signal_type&#xa;effect&#xa;fault_class&#xa;provenance&#xa;provenance_weight&#xa;FK model_version&#xa;source&#xa;source_event_id&#xa;order_id&#xa;interaction_id&#xa;value&#xa;is_valid&#xa;invalid_reason&#xa;invalidated_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="44" y="2954" width="170" height="450" as="geometry"/>
+        <mxCell id="business_trust" value="business_trust&#xa;PK business_id: uuid&#xa;trust_weight: numeric(5&#xa;status: text&#xa;manual_negative_count_30d: int&#xa;source_version: bigint&#xa;updated_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="2554" y="94" width="240" height="150" as="geometry"/>
         </mxCell>
-        <mxCell id="order_outcome_claims" value="order_outcome_claims&#xa;business_id&#xa;order_id&#xa;FK phone_identity_id&#xa;signal_id&#xa;signal_occurred_at&#xa;replaced_count&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="44" y="2414" width="170" height="190" as="geometry"/>
+        <mxCell id="phone_signals" value="phone_signals&#xa;PK id: uuid&#xa;FK phone_identity_id: uuid&#xa;phone_epoch: int&#xa;business_id: uuid&#xa;source_event_id: uuid&#xa;signal_type: text&#xa;provenance: text&#xa;weight: numeric(6&#xa;FK model_version: text&#xa;PK occurred_at: timestamptz&#xa;is_valid: boolean&#xa;invalid_reason: text&#xa;invalidated_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="3254" y="24" width="220" height="290" as="geometry"/>
         </mxCell>
-        <mxCell id="phone_contributors" value="phone_contributors&#xa;FK phone_identity_id&#xa;phone_epoch&#xa;business_id&#xa;eligible&#xa;outcome_count&#xa;negative_count&#xa;manual_negative_count&#xa;first_signal_at&#xa;last_signal_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="34" y="1364" width="180" height="250" as="geometry"/>
+        <mxCell id="order_outcome_claims" value="order_outcome_claims&#xa;PK order_id: uuid&#xa;FK phone_identity_id: uuid&#xa;business_id: uuid&#xa;signal_id: uuid&#xa;signal_occurred_at: timestamptz&#xa;claimed_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="834" y="94" width="250" height="150" as="geometry"/>
         </mxCell>
-        <mxCell id="global_scores" value="global_scores&#xa;PK phone_identity_id&#xa;phone_epoch&#xa;FK model_version&#xa;score&#xa;tier&#xa;confidence&#xa;effective_n&#xa;eligible_contributors&#xa;reason_codes&#xa;history_id&#xa;computed_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="34" y="2624" width="180" height="310" as="geometry"/>
+        <mxCell id="phone_contributors" value="phone_contributors&#xa;PK phone_identity_id: uuid&#xa;PK phone_epoch: int&#xa;PK business_id: uuid&#xa;first_contribution_at: timestamptz&#xa;eligible_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="274" y="104" width="270" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="global_score_history" value="global_score_history&#xa;id&#xa;computed_at&#xa;phone_identity_id&#xa;phone_epoch&#xa;FK model_version&#xa;params_sha256&#xa;run_kind&#xa;score&#xa;tier&#xa;confidence&#xa;effective_n&#xa;eligible_contributors&#xa;reason_codes&#xa;signal_count&#xa;inputs_sha256&#xa;created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="34" y="3424" width="180" height="350" as="geometry"/>
+        <mxCell id="global_scores" value="global_scores&#xa;PK phone_identity_id: uuid&#xa;phone_epoch: int&#xa;band: text&#xa;confidence: text&#xa;effective_n: int&#xa;FK model_version: text&#xa;computed_at: timestamptz&#xa;frozen_until: timestamptz&#xa;version: bigint" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="2314" y="64" width="220" height="210" as="geometry"/>
         </mxCell>
-        <mxCell id="owner_verifications" value="owner_verifications&#xa;PK id&#xa;phone_hash&#xa;FK pepper_version&#xa;method&#xa;otp_hmac&#xa;otp_key_version&#xa;attempts&#xa;max_attempts&#xa;status&#xa;expires_at&#xa;verified_at&#xa;session_token_sha256&#xa;session_expires_at&#xa;identity_user_id&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="264" y="964" width="170" height="350" as="geometry"/>
+        <mxCell id="global_score_history" value="global_score_history&#xa;PK id: uuid&#xa;FK phone_identity_id: uuid&#xa;phone_epoch: int&#xa;band: text&#xa;confidence: text&#xa;effective_n: int&#xa;FK model_version: text&#xa;params_sha256: bytea&#xa;PK computed_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="2084" y="64" width="220" height="210" as="geometry"/>
         </mxCell>
-        <mxCell id="disputes" value="disputes&#xa;PK id&#xa;FK phone_identity_id&#xa;phone_epoch&#xa;FK owner_verification_id&#xa;raised_by_user_id&#xa;signal_id&#xa;signal_occurred_at&#xa;order_id&#xa;reason_code&#xa;reason_text&#xa;status&#xa;freeze_until&#xa;due_at&#xa;resolved_by&#xa;resolution_note&#xa;resolved_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="24" y="934" width="200" height="410" as="geometry"/>
+        <mxCell id="consents" value="consents&#xa;PK id: uuid&#xa;FK phone_identity_id: uuid&#xa;purpose: text&#xa;decision: text&#xa;seq: bigint&#xa;wording_text: text&#xa;wording_sha256: bytea&#xa;evidence: jsonb&#xa;PK effective_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="24" y="64" width="230" height="210" as="geometry"/>
         </mxCell>
-        <mxCell id="consents" value="consents&#xa;PK id&#xa;FK phone_identity_id&#xa;business_id&#xa;purpose&#xa;status&#xa;method&#xa;policy_version&#xa;locale&#xa;wording_text&#xa;wording_sha256&#xa;evidence&#xa;seq&#xa;effective_at&#xa;created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="44" y="1634" width="170" height="310" as="geometry"/>
+        <mxCell id="disputes" value="disputes&#xa;PK id: uuid&#xa;FK phone_identity_id: uuid&#xa;signal_id: uuid&#xa;signal_occurred_at: timestamptz&#xa;status: text&#xa;reason_text: text&#xa;opened_via: text&#xa;opened_at: timestamptz&#xa;resolved_at: timestamptz&#xa;resolved_by: uuid&#xa;frozen_until: timestamptz&#xa;due_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="1574" y="34" width="250" height="270" as="geometry"/>
         </mxCell>
-        <mxCell id="data_subject_requests" value="data_subject_requests&#xa;PK id&#xa;FK phone_identity_id&#xa;FK owner_verification_id&#xa;user_id&#xa;type&#xa;status&#xa;erasure_mode&#xa;due_at&#xa;handled_by&#xa;outcome_note&#xa;completed_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="24" y="344" width="200" height="310" as="geometry"/>
+        <mxCell id="owner_verifications" value="owner_verifications&#xa;PK id: uuid&#xa;phone_hash: bytea&#xa;otp_hash: bytea&#xa;otp_key_version: int&#xa;status: text&#xa;attempts: int&#xa;created_at: timestamptz&#xa;verified_at: timestamptz&#xa;session_token_hash: bytea&#xa;session_expires_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="564" y="54" width="250" height="230" as="geometry"/>
         </mxCell>
-        <mxCell id="legal_holds" value="legal_holds&#xa;PK id&#xa;FK phone_identity_id&#xa;reason&#xa;case_ref&#xa;placed_by&#xa;placed_at&#xa;released_at&#xa;released_by&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
-          <mxGeometry x="44" y="1964" width="170" height="230" as="geometry"/>
+        <mxCell id="data_subject_requests" value="data_subject_requests&#xa;PK id: uuid&#xa;FK phone_identity_id: uuid&#xa;kind: text&#xa;status: text&#xa;requested_via: text&#xa;requested_at: timestamptz&#xa;completed_at: timestamptz&#xa;due_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="1334" y="74" width="220" height="190" as="geometry"/>
         </mxCell>
-        <mxCell id="known_phones" value="known_phones&#xa;PK id&#xa;business_id&#xa;phone_hash&#xa;FK pepper_version&#xa;first_seen_at&#xa;last_seen_at&#xa;last_source&#xa;has_order&#xa;forgotten_at&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_1">
-          <mxGeometry x="244" y="234" width="160" height="250" as="geometry"/>
+        <mxCell id="legal_holds" value="legal_holds&#xa;PK id: uuid&#xa;FK phone_identity_id: uuid&#xa;reason: text&#xa;created_at: timestamptz&#xa;released_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_0">
+          <mxGeometry x="1094" y="104" width="220" height="130" as="geometry"/>
         </mxCell>
-        <mxCell id="tenant_scores" value="tenant_scores&#xa;PK id&#xa;business_id&#xa;FK known_phone_id&#xa;phone_epoch&#xa;FK model_version&#xa;score&#xa;tier&#xa;confidence&#xa;effective_n&#xa;reason_codes&#xa;history_id&#xa;computed_at&#xa;version&#xa;created_at&#xa;updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_1">
-          <mxGeometry x="24" y="394" width="160" height="330" as="geometry"/>
+        <mxCell id="known_phones" value="known_phones&#xa;PK id: uuid&#xa;business_id: uuid&#xa;phone_hash: bytea&#xa;has_order: boolean&#xa;min_order_age_hours: int&#xa;last_seen_at: timestamptz&#xa;forgotten_at: timestamptz&#xa;created_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_1">
+          <mxGeometry x="384" y="304" width="210" height="190" as="geometry"/>
         </mxCell>
-        <mxCell id="tenant_score_history" value="tenant_score_history&#xa;id&#xa;computed_at&#xa;business_id&#xa;known_phone_id&#xa;phone_epoch&#xa;FK model_version&#xa;params_sha256&#xa;run_kind&#xa;score&#xa;tier&#xa;confidence&#xa;effective_n&#xa;reason_codes&#xa;signal_count&#xa;inputs_sha256&#xa;created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_1">
-          <mxGeometry x="24" y="24" width="170" height="350" as="geometry"/>
+        <mxCell id="tenant_scores" value="tenant_scores&#xa;PK known_phone_id: uuid&#xa;FK business_id: uuid&#xa;tier: text&#xa;confidence: text&#xa;effective_n: int&#xa;FK model_version: text&#xa;computed_at: timestamptz&#xa;version: bigint" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_1">
+          <mxGeometry x="514" y="24" width="200" height="190" as="geometry"/>
         </mxCell>
-        <mxCell id="score_lookups" value="score_lookups&#xa;id&#xa;requested_at&#xa;business_id&#xa;phone_hash&#xa;actor_kind&#xa;actor_id&#xa;channel&#xa;outcome&#xa;tenant_tier&#xa;global_status&#xa;global_band&#xa;model_version&#xa;correlation_id" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_1">
-          <mxGeometry x="24" y="744" width="160" height="290" as="geometry"/>
+        <mxCell id="tenant_score_history" value="tenant_score_history&#xa;PK id: uuid&#xa;FK business_id: uuid&#xa;FK known_phone_id: uuid&#xa;tier: text&#xa;confidence: text&#xa;FK model_version: text&#xa;PK computed_at: timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_1">
+          <mxGeometry x="274" y="34" width="220" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="score_lookups" value="score_lookups&#xa;PK id: uuid&#xa;business_id: uuid&#xa;phone_hash: bytea&#xa;known_phone_id: uuid&#xa;result: text&#xa;PK requested_at: timestamptz&#xa;requested_by: uuid" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="group_1">
+          <mxGeometry x="24" y="34" width="230" height="170" as="geometry"/>
         </mxCell>
         <mxCell id="e0" value="pepper_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="phone_identities" target="pepper_versions">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="430" y="2080"/><mxPoint x="460" y="2080"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1580" y="520"/><mxPoint x="1580" y="570"/></Array></mxGeometry>
         </mxCell>
         <mxCell id="e1" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="phone_epochs" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="220" y="2220"/><mxPoint x="260" y="2220"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1960" y="310"/><mxPoint x="1960" y="420"/><mxPoint x="1960" y="420"/><mxPoint x="1960" y="420"/><mxPoint x="1690" y="420"/></Array></mxGeometry>
         </mxCell>
         <mxCell id="e2" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="phone_signals" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="280" y="3110"/><mxPoint x="350" y="3110"/><mxPoint x="350" y="3110"/><mxPoint x="350" y="3110"/><mxPoint x="350" y="2240"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2880" y="320"/><mxPoint x="1650" y="320"/><mxPoint x="1650" y="320"/><mxPoint x="1650" y="320"/><mxPoint x="1650" y="380"/></Array></mxGeometry>
         </mxCell>
         <mxCell id="e3" value="model_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="phone_signals" target="score_models">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="290" y="3260"/><mxPoint x="380" y="3260"/><mxPoint x="380" y="3260"/><mxPoint x="380" y="3260"/><mxPoint x="380" y="3470"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="3370" y="320"/><mxPoint x="3370" y="350"/></Array></mxGeometry>
         </mxCell>
         <mxCell id="e4" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="order_outcome_claims" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="260" y="2520"/><mxPoint x="300" y="2520"/><mxPoint x="300" y="2520"/><mxPoint x="300" y="2520"/><mxPoint x="300" y="2240"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="330"/><mxPoint x="960" y="440"/><mxPoint x="960" y="440"/><mxPoint x="960" y="440"/><mxPoint x="1470" y="440"/></Array></mxGeometry>
         </mxCell>
         <mxCell id="e5" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="phone_contributors" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="280" y="1500"/><mxPoint x="350" y="1500"/><mxPoint x="350" y="1500"/><mxPoint x="350" y="1500"/><mxPoint x="350" y="1930"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="420" y="330"/><mxPoint x="420" y="470"/><mxPoint x="420" y="470"/><mxPoint x="420" y="470"/><mxPoint x="1470" y="470"/></Array></mxGeometry>
         </mxCell>
         <mxCell id="e6" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="global_scores" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="270" y="2740"/><mxPoint x="330" y="2740"/><mxPoint x="330" y="2740"/><mxPoint x="330" y="2740"/><mxPoint x="330" y="2240"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2400" y="370"/><mxPoint x="2400" y="490"/><mxPoint x="2400" y="490"/><mxPoint x="2400" y="490"/><mxPoint x="1690" y="490"/></Array></mxGeometry>
         </mxCell>
         <mxCell id="e7" value="model_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="global_scores" target="score_models">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="300" y="2840"/><mxPoint x="410" y="2840"/><mxPoint x="410" y="2840"/><mxPoint x="410" y="2840"/><mxPoint x="410" y="3470"/></Array></mxGeometry>
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2470" y="330"/><mxPoint x="2470" y="370"/><mxPoint x="2470" y="370"/><mxPoint x="2470" y="370"/><mxPoint x="3260" y="370"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e8" value="model_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="global_score_history" target="score_models">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="220" y="3560"/><mxPoint x="260" y="3560"/></Array></mxGeometry>
+        <mxCell id="e8" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="global_score_history" target="phone_identities">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2160" y="360"/><mxPoint x="2160" y="450"/><mxPoint x="2160" y="450"/><mxPoint x="2160" y="450"/><mxPoint x="1690" y="450"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e9" value="pepper_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="owner_verifications" target="pepper_versions">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="490" y="1150"/><mxPoint x="550" y="1150"/><mxPoint x="550" y="1150"/><mxPoint x="550" y="1150"/><mxPoint x="550" y="2000"/></Array></mxGeometry>
+        <mxCell id="e9" value="model_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="global_score_history" target="score_models">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2230" y="330"/><mxPoint x="2230" y="380"/><mxPoint x="2230" y="380"/><mxPoint x="2230" y="380"/><mxPoint x="3260" y="380"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e10" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="disputes" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="230" y="1590"/><mxPoint x="230" y="1940"/><mxPoint x="230" y="1940"/><mxPoint x="230" y="1940"/><mxPoint x="260" y="1940"/></Array></mxGeometry>
+        <mxCell id="e10" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="consents" target="phone_identities">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="150" y="370"/><mxPoint x="150" y="490"/><mxPoint x="150" y="490"/><mxPoint x="150" y="490"/><mxPoint x="1470" y="490"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e11" value="owner_verification_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="disputes" target="owner_verifications">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="230" y="1150"/><mxPoint x="260" y="1150"/></Array></mxGeometry>
+        <mxCell id="e11" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="disputes" target="phone_identities">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1610" y="310"/><mxPoint x="1610" y="380"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e12" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="consents" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="220" y="1950"/><mxPoint x="260" y="1950"/></Array></mxGeometry>
+        <mxCell id="e12" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="data_subject_requests" target="phone_identities">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1520" y="270"/><mxPoint x="1520" y="380"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e13" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="data_subject_requests" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="240" y="550"/><mxPoint x="250" y="550"/><mxPoint x="250" y="550"/><mxPoint x="250" y="550"/><mxPoint x="250" y="1940"/><mxPoint x="250" y="1940"/><mxPoint x="250" y="1940"/><mxPoint x="260" y="1940"/></Array></mxGeometry>
+        <mxCell id="e13" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="legal_holds" target="phone_identities">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1210" y="310"/><mxPoint x="1210" y="410"/><mxPoint x="1210" y="410"/><mxPoint x="1210" y="410"/><mxPoint x="1470" y="410"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e14" value="owner_verification_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="data_subject_requests" target="owner_verifications">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="290" y="450"/><mxPoint x="350" y="450"/><mxPoint x="350" y="450"/><mxPoint x="350" y="450"/><mxPoint x="350" y="960"/></Array></mxGeometry>
+        <mxCell id="e14" value="model_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_scores" target="score_models">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="4180" y="270"/><mxPoint x="4100" y="270"/><mxPoint x="4100" y="270"/><mxPoint x="4100" y="270"/><mxPoint x="4100" y="480"/><mxPoint x="4100" y="480"/><mxPoint x="4100" y="480"/><mxPoint x="3480" y="480"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e15" value="phone_identity_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="legal_holds" target="phone_identities">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="220" y="2080"/><mxPoint x="260" y="2080"/></Array></mxGeometry>
+        <mxCell id="e15" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_scores" target="known_phones">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="4310" y="270"/><mxPoint x="4310" y="350"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e16" value="pepper_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="known_phones" target="pepper_versions">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="490" y="4160"/><mxPoint x="550" y="4160"/><mxPoint x="550" y="4160"/><mxPoint x="550" y="4160"/><mxPoint x="550" y="2170"/></Array></mxGeometry>
+        <mxCell id="e16" value="known_phone_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_scores" target="known_phones">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="4310" y="270"/><mxPoint x="4310" y="350"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e17" value="known_phone_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_scores" target="known_phones">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="210" y="4260"/><mxPoint x="260" y="4260"/></Array></mxGeometry>
+        <mxCell id="e17" value="model_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_score_history" target="score_models">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="4060" y="330"/><mxPoint x="4060" y="420"/><mxPoint x="4060" y="420"/><mxPoint x="4060" y="420"/><mxPoint x="3480" y="420"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e18" value="model_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_scores" target="score_models">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="220" y="4230"/><mxPoint x="230" y="4230"/><mxPoint x="230" y="4230"/><mxPoint x="230" y="4230"/><mxPoint x="230" y="3640"/><mxPoint x="230" y="3640"/><mxPoint x="230" y="3640"/><mxPoint x="260" y="3640"/></Array></mxGeometry>
+        <mxCell id="e18" value="business_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_score_history" target="known_phones">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="4200" y="260"/><mxPoint x="4200" y="350"/></Array></mxGeometry>
         </mxCell>
-        <mxCell id="e19" value="model_version" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_score_history" target="score_models">
-          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="280" y="3940"/><mxPoint x="350" y="3940"/><mxPoint x="350" y="3940"/><mxPoint x="350" y="3940"/><mxPoint x="350" y="3740"/></Array></mxGeometry>
+        <mxCell id="e19" value="known_phone_id" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=11;labelBackgroundColor=#ffffff;startArrow=ERmany;startFill=0;endArrow=ERone;endFill=0;" edge="1" parent="1" source="tenant_score_history" target="known_phones">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="4200" y="260"/><mxPoint x="4200" y="350"/></Array></mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
